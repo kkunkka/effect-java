@@ -1,10 +1,7 @@
 ---
 sidebar_label: 第二章 创建和销毁对象
-title: 第二章 创建和销毁对象
 ---
-## 第二章 创建和销毁对象
-
-### 章节介绍
+# 章节介绍
 
 This chapter concerns（关注、涉及） creating and destroying objects: when and how to create them, when and how to avoid creating them, how to ensure they are destroyed in a timely manner, and how to manage any cleanup actions that must precede their destruction.
 
