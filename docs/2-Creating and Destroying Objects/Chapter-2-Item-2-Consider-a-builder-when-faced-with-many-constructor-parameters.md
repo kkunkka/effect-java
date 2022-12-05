@@ -1,16 +1,10 @@
-## Chapter 2. Creating and Destroying Objects（创建和销毁对象）
-
-### Item 2: Consider a builder when faced with many constructor parameters（当构造函数有多个参数时，考虑改用构建器）
-
-Static factories and constructors share a limitation: they do not scale well to large numbers of optional parameters. Consider the case of a class representing the Nutrition Facts label that appears on packaged foods. These labels have a few required fields—serving size, servings per container, and calories per serving— and more than twenty optional fields—total fat, saturated fat, trans fat,cholesterol, sodium, and so on. Most products have nonzero values for only a few of these optional fields.
+# 第二节：当构造函数有多个参数时，考虑改用构建器
 
 静态工厂和构造函数都有一个局限：它们不能对大量可选参数做很好的扩展。以一个类为例，它表示包装食品上的营养标签。这些标签上有一些字段是必需的，如：净含量、毛重和每单位份量的卡路里，另有超过 20 个可选的字段，如：总脂肪、饱和脂肪、反式脂肪、胆固醇、钠等等。大多数产品只有这些可选字段中的少数，且具有非零值。
 
-What sort of constructors or static factories should you write for such a class?Traditionally, programmers have used the telescoping constructor pattern, in which you provide a constructor with only the required parameters, another with a single optional parameter, a third with two optional parameters, and so on,culminating in a constructor with all the optional parameters. Here’s how it looks in practice. For brevity’s sake, only four optional fields are shown:
-
 应该为这样的类编写什么种类的构造函数或静态工厂呢？传统的方式是使用可伸缩构造函数，在这种模式中，只向构造函数提供必需的参数。即，向第一个构造函数提供单个可选参数，向第二个构造函数提供两个可选参数，以此类推，最后一个构造函数是具有所有可选参数的。这是它在实际应用中的样子。为了简洁起见，只展示具备四个可选字段的情况：
 
-```
+``` Java
 // Telescoping constructor pattern - does not scale well!
 public class NutritionFacts {
     private final int servingSize; // (mL) required
