@@ -1,25 +1,25 @@
-# Website
+# Effect Java
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+此项目使用 [Docusaurus 2](https://docusaurus.io/)构建, 一个以React开发的静态网站生成器
 
-### Installation
-
-```
-$ yarn
-```
-
-### Local Development
+### 初始化项目
 
 ```
-$ yarn start
+$ pnpm install
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-### Build
+### 本地运行
 
 ```
-$ yarn build
+$ pnpm start
+```
+
+这个命令启动一个本地开发服务器并打开一个浏览器窗口。大多数更改都是实时反映的，无需重新启动服务器。
+
+### 构建
+
+```
+$ pnpm build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
