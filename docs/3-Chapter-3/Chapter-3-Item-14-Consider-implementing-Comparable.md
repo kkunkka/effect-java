@@ -1,4 +1,4 @@
-# 第十四条: 考虑实现 Comparable 接口
+# 第十四节: 考虑实现 Comparable 接口
 
 与本章讨论的其他方法不同，compareTo 方法不是在 Object 中声明的。相反，它是 Comparable 接口中的唯一方法。它在性质上类似于 Object 的 equals 方法，除了简单的相等比较之外，它还允许顺序比较，而且它是通用的。一个类实现 Comparable，表明实例具有自然顺序。对实现 Comparable 的对象数组进行排序非常简单：
 
