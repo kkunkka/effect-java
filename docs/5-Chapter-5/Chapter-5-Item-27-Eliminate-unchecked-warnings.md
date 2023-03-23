@@ -12,15 +12,15 @@ Set<Lark> exaltation = new HashSet();
 
 ```
 Venery.java:4: warning: [unchecked] unchecked conversion
-Set&lt;Lark&gt; exaltation = new HashSet();
-^ required: Set&lt;Lark&gt;
+Set<Lark> exaltation = new HashSet();
+^ required: Set<Lark>
 found: HashSet
 ```
 
-你可以在指定位置进行更正，使警告消失。注意，你实际上不必指定类型参数，只需给出由 Java 7 中引入的 diamond 操作符（&lt;&gt;）。然后编译器将推断出正确的实际类型参数（在本例中为 Lark）：
+你可以在指定位置进行更正，使警告消失。注意，你实际上不必指定类型参数，只需给出由 Java 7 中引入的 diamond 操作符（<>）。然后编译器将推断出正确的实际类型参数（在本例中为 Lark）：
 
 ```
-Set&lt;Lark/&gt; exaltation = new HashSet&lt;&gt;();
+Set<Lark/> exaltation = new HashSet<>();
 ```
 
 一些警告会更难消除。这一章充满这类警告的例子。当你收到需要认真思考的警告时，坚持下去！**力求消除所有 unchecked 警告。** 如果你消除了所有警告，你就可以确信你的代码是类型安全的，这是一件非常好的事情。这意味着你在运行时不会得到 ClassCastException，它增加了你的信心，你的程序将按照预期的方式运行。
@@ -32,11 +32,11 @@ SuppressWarnings 注解可以用于任何声明中，从单个局部变量声明
 如果你发现自己在一个超过一行的方法或构造函数上使用 SuppressWarnings 注解，那么你可以将其移动到局部变量声明中。你可能需要声明一个新的局部变量，但这是值得的。例如，考虑这个 toArray 方法，它来自 ArrayList：
 
 ```
-public &lt;T&gt; T[] toArray(T[] a) {
-    if (a.length &lt; size)
+public <T> T[] toArray(T[] a) {
+    if (a.length < size)
         return (T[]) Arrays.copyOf(elements, size, a.getClass());
     System.arraycopy(elements, 0, a, 0, size);
-    if (a.length &gt; size)
+    if (a.length > size)
         a[size] = null;
     return a;
 }
@@ -55,15 +55,15 @@ found: Object[]
 
 ```
 // Adding local variable to reduce scope of @SuppressWarnings
-public &lt;T&gt; T[] toArray(T[] a) {
-    if (a.length &lt; size) {
+public <T> T[] toArray(T[] a) {
+    if (a.length < size) {
         // This cast is correct because the array we're creating
         // is of the same type as the one passed in, which is T[].
         @SuppressWarnings("unchecked") T[] result = (T[]) Arrays.copyOf(elements, size, a.getClass());
         return result;
     }
     System.arraycopy(elements, 0, a, 0, size);
-    if (a.length &gt; size)
+    if (a.length > size)
         a[size] = null;
     return a;
 }
