@@ -17,23 +17,23 @@ public class CollectionClassifier {
         return "List";
     }
 
-    public static String classify(Collection<?> c) {
+    public static String classify(Collection&lt;?&gt; c) {
         return "Unknown Collection";
     }
 
     public static void main(String[] args) {
-        Collection<?>[] collections = {
-            new HashSet<String>(),new ArrayList<BigInteger>(),new HashMap<String, String>().values()
+        Collection&lt;?&gt;[] collections = {
+            new HashSet&lt;String&gt;(),new ArrayList&lt;BigInteger&gt;(),new HashMap&lt;String, String&gt;().values()
         };
-        for (Collection<?> c : collections)
+        for (Collection&lt;?&gt; c : collections)
             System.out.println(classify(c));
     }
 }
 ```
 
-You might expect this program to print Set, followed by List and Unknown Collection, but it doesn’t. It prints Unknown Collection three times. Why does this happen? Because the classify method is overloaded, and **the choice of which overloading to invoke is made at compile time.** For all three iterations of the loop, the compile-time type of the parameter is the same: `Collection<?>`. The runtime type is different in each iteration, but this does not affect the choice of overloading. Because the compile-time type of the parameter is `Collection<?>`, the only applicable overloading is the third one, `classify(Collection<?>)`, and this overloading is invoked in each iteration of the loop.
+You might expect this program to print Set, followed by List and Unknown Collection, but it doesn’t. It prints Unknown Collection three times. Why does this happen? Because the classify method is overloaded, and **the choice of which overloading to invoke is made at compile time.** For all three iterations of the loop, the compile-time type of the parameter is the same: `Collection&lt;?&gt;`. The runtime type is different in each iteration, but this does not affect the choice of overloading. Because the compile-time type of the parameter is `Collection&lt;?&gt;`, the only applicable overloading is the third one, `classify(Collection&lt;?&gt;)`, and this overloading is invoked in each iteration of the loop.
 
-你可能期望这个程序打印 Set，然后是 List 和 Unknown Collection，但是它没有这样做。它打印 Unknown Collection 三次。为什么会这样？因为 classify 方法被重载，并且 **在编译时就决定了要调用哪个重载。** 对于循环的三个迭代过程，参数的编译时类型是相同的：`Collection<?>`。运行时类型在每个迭代中是不同的，但这并不影响重载的选择。因为参数的编译时类型是 `Collection<?>;`，唯一适用的重载是第三个，`classify(Collection<?>)`，这个重载在循环的每个迭代过程中都会调用。
+你可能期望这个程序打印 Set，然后是 List 和 Unknown Collection，但是它没有这样做。它打印 Unknown Collection 三次。为什么会这样？因为 classify 方法被重载，并且 **在编译时就决定了要调用哪个重载。** 对于循环的三个迭代过程，参数的编译时类型是相同的：`Collection&lt;?&gt;`。运行时类型在每个迭代中是不同的，但这并不影响重载的选择。因为参数的编译时类型是 `Collection<?>;`，唯一适用的重载是第三个，`classify(Collection&lt;?&gt;)`，这个重载在循环的每个迭代过程中都会调用。
 
 The behavior of this program is counterintuitive because **selection among overloaded methods is static, while selection among overridden methods is dynamic.** The correct version of an overridden method is chosen at runtime, based on the runtime type of the object on which the method is invoked. As a reminder, a method is overridden when a subclass contains a method declaration with the same signature as a method declaration in an ancestor. If an instance method is overridden in a subclass and this method is invoked on an instance of the subclass, the subclass’s overriding method executes, regardless of the compile-time type of the subclass instance. To make this concrete, consider the following program:
 
@@ -72,7 +72,7 @@ In the CollectionClassifier example, the intent of the program was to discern th
 在 CollectionClassifier 示例中，程序的目的是通过根据参数的运行时类型自动分派到适当的方法重载来识别参数的类型，就像 Wine 示例中的 name 方法所做的那样。方法重载不提供此功能。假设需要一个静态方法，修复 CollectionClassifier 程序的最佳方法是用一个执行显式 instanceof 测试的方法替换 classification 的所有三个重载：
 
 ```
-public static String classify(Collection<?> c) {
+public static String classify(Collection&lt;?&gt; c) {
     return c instanceof Set ? "Set" :c instanceof List ? "List" : "Unknown Collection";
 }
 ```
@@ -104,13 +104,13 @@ Prior to Java 5, all primitive types were radically different from all reference
 ```
 public class SetList {
 public static void main(String[] args) {
-    Set<Integer> set = new TreeSet<>();
-    List<Integer> list = new ArrayList<>();
-    for (int i = -3; i < 3; i++) {
+    Set&lt;Integer&gt; set = new TreeSet&lt;&gt;();
+    List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+    for (int i = -3; i &lt; 3; i++) {
         set.add(i);
         list.add(i);
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i &lt; 3; i++) {
         set.remove(i);
         list.remove(i);
     }
@@ -128,15 +128,15 @@ Here’s what’s happening: The call to set.remove(i) selects the overloading r
 实际情况如下：调用 `set.remove(i)` 选择重载 `remove(E)`，其中 E 是 set （Integer）的元素类型，而将从 int 自动装箱到 Integer 中。这是你期望的行为，因此程序最终会从 Set 中删除正值。另一方面，对 `list.remove(i)` 的调用选择重载 `remove(int i)`，它将删除 List 中指定位置的元素。如果从 List `[-3，-2，-1,0,1,2]` 开始，移除第 0 个元素，然后是第 1 个，然后是第 2 个，就只剩下 `[-2,0,2]`，谜底就解开了。若要修复此问题，要将 `list.remove` 的参数转换成 Integer，强制选择正确的重载。或者，你可以调用 `Integer.valuef()`，然后将结果传递给 `list.remove`。无论哪种方式，程序都会按预期打印 `[-3, -2, -1] [-3, -2, -1]`:
 
 ```
-for (int i = 0; i < 3; i++) {
+for (int i = 0; i &lt; 3; i++) {
     set.remove(i);
     list.remove((Integer) i); // or remove(Integer.valueOf(i))
 }
 ```
 
-The confusing behavior demonstrated by the previous example came about because the List<E> interface has two overloadings of the remove method: remove(E) and remove(int). Prior to Java 5 when the List interface was “generified,” it had a remove(Object) method in place of remove(E), and the corresponding parameter types, Object and int, were radically different. But in the presence of generics and autoboxing, the two parameter types are no longer radically different. In other words, adding generics and autoboxing to the language damaged the List interface. Luckily, few if any other APIs in the Java libraries were similarly damaged, but this tale makes it clear that autoboxing and generics increased the importance of caution when overloading. The addition of lambdas and method references in Java 8 further increased the potential for confusion in overloading. For example, consider these two snippets:
+The confusing behavior demonstrated by the previous example came about because the List&lt;E&gt; interface has two overloadings of the remove method: remove(E) and remove(int). Prior to Java 5 when the List interface was “generified,” it had a remove(Object) method in place of remove(E), and the corresponding parameter types, Object and int, were radically different. But in the presence of generics and autoboxing, the two parameter types are no longer radically different. In other words, adding generics and autoboxing to the language damaged the List interface. Luckily, few if any other APIs in the Java libraries were similarly damaged, but this tale makes it clear that autoboxing and generics increased the importance of caution when overloading. The addition of lambdas and method references in Java 8 further increased the potential for confusion in overloading. For example, consider these two snippets:
 
-前一个示例所演示的令人困惑的行为是由于 List<E> 接口对 remove 方法有两个重载：`remove(E)` 和 `remove(int)`。在 Java 5 之前，当 List 接口被「泛化」时，它有一个 `remove(Object)` 方法代替 `remove(E)`，而相应的参数类型 Object 和 int 则完全不同。但是，在泛型和自动装箱的存在下，这两种参数类型不再完全不同。换句话说，在语言中添加泛型和自动装箱破坏了 List 接口。幸运的是，Java 库中的其他 API 几乎没有受到类似的破坏，但是这个故事清楚地表明，自动装箱和泛型出现后，在重载时就应更加谨慎。Java 8 中添加的 lambda 表达式和方法引用进一步增加了重载中混淆的可能性。例如，考虑以下两个片段：
+前一个示例所演示的令人困惑的行为是由于 List&lt;E&gt; 接口对 remove 方法有两个重载：`remove(E)` 和 `remove(int)`。在 Java 5 之前，当 List 接口被「泛化」时，它有一个 `remove(Object)` 方法代替 `remove(E)`，而相应的参数类型 Object 和 int 则完全不同。但是，在泛型和自动装箱的存在下，这两种参数类型不再完全不同。换句话说，在语言中添加泛型和自动装箱破坏了 List 接口。幸运的是，Java 库中的其他 API 几乎没有受到类似的破坏，但是这个故事清楚地表明，自动装箱和泛型出现后，在重载时就应更加谨慎。Java 8 中添加的 lambda 表达式和方法引用进一步增加了重载中混淆的可能性。例如，考虑以下两个片段：
 
 ```
 new Thread(System.out::println).start();
@@ -144,9 +144,9 @@ ExecutorService exec = Executors.newCachedThreadPool();
 exec.submit(System.out::println);
 ```
 
-While the Thread constructor invocation and the submit method invocation look similar, the former compiles while the latter does not. The arguments are identical (System.out::println), and both the constructor and the method have an overloading that takes a Runnable. What’s going on here? The surprising answer is that the submit method has an overloading that takes a `Callable<T>`, while the Thread constructor does not. You might think that this shouldn’t make any difference because all overloadings of println return void, so the method reference couldn’t possibly be a Callable. This makes perfect sense, but it’s not the way the overload resolution algorithm works. Perhaps equally surprising is that the submit method invocation would be legal if the println method weren’t also overloaded. It is the combination of the overloading of the referenced method (println) and the invoked method (submit) that prevents the overload resolution algorithm from behaving as you’d expect.
+While the Thread constructor invocation and the submit method invocation look similar, the former compiles while the latter does not. The arguments are identical (System.out::println), and both the constructor and the method have an overloading that takes a Runnable. What’s going on here? The surprising answer is that the submit method has an overloading that takes a `Callable&lt;T&gt;`, while the Thread constructor does not. You might think that this shouldn’t make any difference because all overloadings of println return void, so the method reference couldn’t possibly be a Callable. This makes perfect sense, but it’s not the way the overload resolution algorithm works. Perhaps equally surprising is that the submit method invocation would be legal if the println method weren’t also overloaded. It is the combination of the overloading of the referenced method (println) and the invoked method (submit) that prevents the overload resolution algorithm from behaving as you’d expect.
 
-虽然 Thread 构造函数调用和 submit 方法调用看起来很相似，但是前者编译而后者不编译。参数是相同的 `System.out::println`，构造函数和方法都有一个重载，该重载接受 Runnable。这是怎么回事？令人惊讶的答案是，submit 方法有一个重载，它接受一个 `Callable<T>`，而线程构造函数没有。你可能认为这不会有什么区别，因为 println 的所有重载都会返回 void，所以方法引用不可能是 Callable。这很有道理，但重载解析算法不是这样工作的。也许同样令人惊讶的是，如果 println 方法没有被重载，那么 submit 方法调用将是合法的。正是被引用的方法 println 和被调用的方法 submit 的重载相结合，阻止了重载解析算法按照你所期望的那样运行。
+虽然 Thread 构造函数调用和 submit 方法调用看起来很相似，但是前者编译而后者不编译。参数是相同的 `System.out::println`，构造函数和方法都有一个重载，该重载接受 Runnable。这是怎么回事？令人惊讶的答案是，submit 方法有一个重载，它接受一个 `Callable&lt;T&gt;`，而线程构造函数没有。你可能认为这不会有什么区别，因为 println 的所有重载都会返回 void，所以方法引用不可能是 Callable。这很有道理，但重载解析算法不是这样工作的。也许同样令人惊讶的是，如果 println 方法没有被重载，那么 submit 方法调用将是合法的。正是被引用的方法 println 和被调用的方法 submit 的重载相结合，阻止了重载解析算法按照你所期望的那样运行。
 
 Technically speaking, the problem is that System.out::println is an inexact method reference [JLS, 15.13.1] and that “certain argument expressions that contain implicitly typed lambda expressions or inexact method references are ignored by the applicability tests, because their meaning cannot be determined until a target type is selected [JLS, 15.12.2].” Don’t worry if you don’t understand this passage; it is aimed at compiler writers. The key point is that overloading methods or constructors with different functional interfaces in the same argument position causes confusion. Therefore, **do not overload methods to take different functional interfaces in the same argument position.** In the parlance of this item, different functional interfaces are not radically different. The Java compiler will warn you about this sort of problematic overload if you pass the command line switch - Xlint:overloads.
 
