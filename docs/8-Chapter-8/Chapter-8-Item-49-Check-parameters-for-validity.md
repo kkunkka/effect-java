@@ -1,6 +1,4 @@
-## Chapter 8. Methods（方法）
-
-### Item 49: Check parameters for validity（检查参数的有效性）
+# 第四十九节: Check parameters for validity（检查参数的有效性）
 
 Most methods and constructors have some restrictions on what values may be passed into their parameters. For example, it is not uncommon that index values must be non-negative and object references must be non-null. You should clearly document all such restrictions and enforce them with checks at the beginning of the method body. This is a special case of the general principle that you should attempt to detect errors as soon as possible after they occur. Failing to do so makes it less likely that an error will be detected and makes it harder to determine the source of an error once it has been detected.
 

@@ -1,6 +1,4 @@
-## Chapter 8. Methods（方法）
-
-### Item 50: Make defensive copies when needed（在需要时制作防御性副本）
+# 第五十节: Make defensive copies when needed（在需要时制作防御性副本）
 
 One thing that makes Java a pleasure to use is that it is a safe language. This means that in the absence of native methods it is immune to buffer overruns, array overruns, wild pointers, and other memory corruption errors that plague unsafe languages such as C and C++. In a safe language, it is possible to write classes and to know with certainty that their invariants will hold, no matter what happens in any other part of the system. This is not possible in languages that treat all of memory as one giant array.
 
