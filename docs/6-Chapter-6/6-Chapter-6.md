@@ -1,5 +1,5 @@
 ---
-sidebar_label: 枚举和注解
+sidebar_label: 第六章 枚举和注解
 ---
 
 #章节介绍

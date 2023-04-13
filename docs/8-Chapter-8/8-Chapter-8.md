@@ -1,5 +1,5 @@
 ---
-sidebar_label: 方法
+sidebar_label: 第八章 方法
 ---
 # 章节介绍
 

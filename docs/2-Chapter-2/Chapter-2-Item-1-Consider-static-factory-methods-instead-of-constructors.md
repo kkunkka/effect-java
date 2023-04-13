@@ -28,9 +28,9 @@ public static Boolean valueOf(boolean b) {
 
 ### 2. 静态工厂方法不需要在每次调用时创建新对象
 
-这允许不可变类（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）使用预先构造的实例，或在构造实例时缓存实例，并重复分配它们以避免创建不必要的重复对象。`Boolean.valueOf(boolean)` 方法说明了这种技术：它从不创建对象。这种技术类似于享元模式。如果经常请求相同的对象，特别是在创建对象的代价很高时，它可以极大地提高性能。
+这允许不可变类（[第十七节](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）使用预先构造的实例，或在构造实例时缓存实例，并重复分配它们以避免创建不必要的重复对象。`Boolean.valueOf(boolean)` 方法说明了这种技术：它从不创建对象。这种技术类似于享元模式。如果经常请求相同的对象，特别是在创建对象的代价很高时，它可以极大地提高性能。
 
-静态工厂方法在重复调用中能够返回相同对象，这样的能力允许类在任何时候都能严格控制存在的实例。这样的类被称为实例受控的类。编写实例受控的类有几个原因。实例控制允许一个类来保证它是一个单例（[第三节](../Chapter-2/Chapter-2-Item-3-Enforce-the-singleton-property-with-a-private-constructor-or-an-enum-type)）或不可实例化的（[第四节](..Chapter-2/Chapter-2-Item-4-Enforce-noninstantiability-with-a-private-constructor)）。同时，它允许一个不可变的值类（[第十七节](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）保证不存在两个相同的实例：`a.equals(b)` 当且仅当 `a==b` 为 true。这是享元模式的基础。枚举类型（[第三十四节](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants)）提供了这种保证。
+静态工厂方法在重复调用中能够返回相同对象，这样的能力允许类在任何时候都能严格控制存在的实例。这样的类被称为实例受控的类。编写实例受控的类有几个原因。实例控制允许一个类来保证它是一个单例（[第三节](../Chapter-2/Chapter-2-Item-3-Enforce-the-singleton-property-with-a-private-constructor-or-an-enum-type)）或不可实例化的（[第四节](../Chapter-2/Chapter-2-Item-4-Enforce-noninstantiability-with-a-private-constructor)）。同时，它允许一个不可变的值类（[第十七节](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）保证不存在两个相同的实例：`a.equals(b)` 当且仅当 `a==b` 为 true。这是享元模式的基础。枚举类型（[第三十四节](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants)）提供了这种保证。
 
 ### 3. 可以通过静态工厂方法获取返回类型的任何子类的对象
 

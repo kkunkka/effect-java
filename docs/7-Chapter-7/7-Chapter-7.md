@@ -1,5 +1,5 @@
 ---
-sidebar_label: λ 表达式和流
+sidebar_label: 第七章 λ 表达式和流
 ---
 
 # 章节介绍
