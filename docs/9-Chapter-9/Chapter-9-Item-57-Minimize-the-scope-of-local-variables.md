@@ -1,6 +1,6 @@
 # 第五十七节: 将局部变量的作用域最小化
 
-本条目在性质上类似于 [Item-15](/Chapter-4/Chapter-4-Item-15-Minimize-the-accessibility-of-classes-and-members.md)，即「最小化类和成员的可访问性」。通过最小化局部变量的范围，可以提高代码的可读性和可维护性，并降低出错的可能性。
+本条目在性质上类似于 [Item-15](../Chapter-4/Chapter-4-Item-15-Minimize-the-accessibility-of-classes-and-members)，即「最小化类和成员的可访问性」。通过最小化局部变量的范围，可以提高代码的可读性和可维护性，并降低出错的可能性。
 
 较老的编程语言，如 C 语言，强制要求必须在代码块的头部声明局部变量，一些程序员出于习惯目前继续这样做。这是一个应改变的习惯。温馨提醒，Java 允许你在任何能够合法使用语句的地方声明变量（这与 C99 标准后 C 语言一样）。
 
@@ -12,7 +12,7 @@
 
 循环提供了一个特殊的机会来最小化变量的范围。for 循环的传统形式和 for-each 形式都允许声明循环变量，将它们的作用域精确限制在需要它们的区域。（这个区域由循环的主体以及 for 关键字和主体之间括号中的代码组成。）因此，假设循环结束后不再需要循环变量，for 循环就优于 while 循环。
 
-例如，下面是遍历集合的首选习惯用法（[Item-58](/Chapter-9/Chapter-9-Item-58-Prefer-for-each-loops-to-traditional-for-loops.md)）：
+例如，下面是遍历集合的首选习惯用法（[Item-58](../Chapter-9/Chapter-9-Item-58-Prefer-for-each-loops-to-traditional-for-loops)）：
 
 ```
 // Preferred idiom for iterating over a collection or array

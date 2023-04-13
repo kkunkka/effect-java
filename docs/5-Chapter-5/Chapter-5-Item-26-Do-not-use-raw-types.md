@@ -39,7 +39,7 @@ stamp.cancel();
 private final Collection<Stamp> stamps = ... ;
 ```
 
-从这个声明看出，编译器应该知道 stamps 应该只包含 Stamp 实例，为保证它确实如此，假设你的整个代码库编译没有发出（或抑制；详见 [Item-27](/Chapter-5/Chapter-5-Item-27-Eliminate-unchecked-warnings.md)）任何警告。当 stamps 利用一个参数化的类型进行声明时，错误的插入将生成编译时错误消息，该消息将确切地告诉你哪里出了问题：
+从这个声明看出，编译器应该知道 stamps 应该只包含 Stamp 实例，为保证它确实如此，假设你的整个代码库编译没有发出（或抑制；详见 [Item-27](../Chapter-5/Chapter-5-Item-27-Eliminate-unchecked-warnings)）任何警告。当 stamps 利用一个参数化的类型进行声明时，错误的插入将生成编译时错误消息，该消息将确切地告诉你哪里出了问题：
 
 ```
 Test.java:9: error: incompatible types: Coin cannot be converted
@@ -50,9 +50,9 @@ c.add(new Coin());
 
 当从集合中检索元素时，编译器会为你执行不可见的强制类型转换，并确保它们不会失败（再次假设你的所有代码没有产生或抑制任何编译器警告）。虽然不小心将 coin 插入 stamps 集合看起来有些牵强，但这类问题是真实存在的。例如，很容易想象将一个 BigInteger 放入一个只包含 BigDecimal 实例的集合中。
 
-如前所述，使用原始类型（没有类型参数的泛型）是合法的，但是你永远不应该这样做。**如果使用原始类型，就会失去泛型的安全性和表现力。** 既然你不应该使用它们，那么为什么语言设计者一开始就允许原始类型呢？答案是：为了兼容性。Java 即将进入第二个十年，泛型被添加进来时，还存在大量不使用泛型的代码。保持所有这些代码合法并与使用泛型的新代码兼容被认为是关键的。将参数化类型的实例传递给设计用于原始类型的方法必须是合法的，反之亦然。这被称为迁移兼容性的需求，它促使原始类型得到支持并使用擦除实现泛型 （[Item-28](/Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays.md)）。
+如前所述，使用原始类型（没有类型参数的泛型）是合法的，但是你永远不应该这样做。**如果使用原始类型，就会失去泛型的安全性和表现力。** 既然你不应该使用它们，那么为什么语言设计者一开始就允许原始类型呢？答案是：为了兼容性。Java 即将进入第二个十年，泛型被添加进来时，还存在大量不使用泛型的代码。保持所有这些代码合法并与使用泛型的新代码兼容被认为是关键的。将参数化类型的实例传递给设计用于原始类型的方法必须是合法的，反之亦然。这被称为迁移兼容性的需求，它促使原始类型得到支持并使用擦除实现泛型 （[Item-28](../Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays)）。
 
-虽然你不应该使用原始类型（如 List），但是可以使用参数化的类型来允许插入任意对象，如 `List<Object>`。原始类型 List 和参数化类型 `List<Object>` 之间的区别是什么？粗略地说，前者选择了不使用泛型系统，而后者明确地告诉编译器它能够保存任何类型的对象。虽然可以将 `List<String>` 传递给 List 类型的参数，但不能将其传递给类型 `List<Object>` 的参数。泛型有子类型规则，`List<String>` 是原始类型 List 的子类型，而不是参数化类型 `List<Object>` 的子类型（[Item-28](/Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays.md)）。因此，**如果使用原始类型（如 List），就会失去类型安全性，但如果使用参数化类型（如 `List<Object>`）则不会。**
+虽然你不应该使用原始类型（如 List），但是可以使用参数化的类型来允许插入任意对象，如 `List<Object>`。原始类型 List 和参数化类型 `List<Object>` 之间的区别是什么？粗略地说，前者选择了不使用泛型系统，而后者明确地告诉编译器它能够保存任何类型的对象。虽然可以将 `List<String>` 传递给 List 类型的参数，但不能将其传递给类型 `List<Object>` 的参数。泛型有子类型规则，`List<String>` 是原始类型 List 的子类型，而不是参数化类型 `List<Object>` 的子类型（[Item-28](../Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays)）。因此，**如果使用原始类型（如 List），就会失去类型安全性，但如果使用参数化类型（如 `List<Object>`）则不会。**
 
 为了使这一点具体些，考虑下面的程序：
 
@@ -119,7 +119,7 @@ is a fresh type-variable:
 CAP#1 extends Object from capture of ?
 ```
 
-无可否认，这个错误消息让人不满意，但是编译器已经完成了它的工作，防止你无视它的元素类型而破坏集合的类型一致性。你不仅不能将任何元素（除 null 之外）放入 `Collection<?>`，而且不能臆想你得到的对象的类型。如果这些限制是不可接受的，你可以使用泛型方法（[Item-30](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md)）或有界通配符类型（[Item-31](/Chapter-5/Chapter-5-Item-31-Use-bounded-wildcards-to-increase-API-flexibility.md)）。
+无可否认，这个错误消息让人不满意，但是编译器已经完成了它的工作，防止你无视它的元素类型而破坏集合的类型一致性。你不仅不能将任何元素（除 null 之外）放入 `Collection<?>`，而且不能臆想你得到的对象的类型。如果这些限制是不可接受的，你可以使用泛型方法（[Item-30](../Chapter-5/Chapter-5-Item-30-Favor-generic-methods)）或有界通配符类型（[Item-31](../Chapter-5/Chapter-5-Item-31-Use-bounded-wildcards-to-increase-API-flexibility)）。
 
 对于不应该使用原始类型的规则，有一些小的例外。**必须在类字面量中使用原始类型。** 该规范不允许使用参数化类型（尽管它允许数组类型和基本类型）[JLS, 15.8.2]。换句话说，`List.class`，`String[].class` 和 `int.class` 都是合法的，但是 `List<String>.class` 和 `List<?>.class` 不是。
 
@@ -142,14 +142,14 @@ if (o instanceof Set) { // Raw type
 
 |    Term    |       Example       |      Item     |
 |:-------:|:-------:|:-------:|
-|   Parameterized type  |     `List<String>`    |   [Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md)   |
-|   Actual type parameter  |     `String`    |   [Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md)   |
-|   Generic type  |     `List<E>`    |   [Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md), [Item-29](/Chapter-5/Chapter-5-Item-29-Favor-generic-types.md)   |
-|   Formal type parameter  |     `E`    |   [Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md)   |
-|   Unbounded wildcard type  |     `List<?>`    |   [Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md)   |
-|   Raw type  |     `List`    |   [Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md)   |
-|   Bounded type parameter  |     `<E extends Number>`    |   [Item-29](/Chapter-5/Chapter-5-Item-29-Favor-generic-types.md)   |
-|   Recursive type bound  |     `<T extends Comparable<T>>`    |   [Item-30](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md)   |
-|   Bounded wildcard type  |     `List<? extends Number>`    |   [Item-31](/Chapter-5/Chapter-5-Item-31-Use-bounded-wildcards-to-increase-API-flexibility.md)   |
-|   Generic method  |     `static <E> List<E> asList(E[] a)`   |   [Item-30](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md)   |
-|   Type token  |     `String.class`    |   [Item-33](/Chapter-5/Chapter-5-Item-33-Consider-typesafe-heterogeneous-containers.md)   |
+|   Parameterized type  |     `List<String>`    |   [Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types)   |
+|   Actual type parameter  |     `String`    |   [Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types)   |
+|   Generic type  |     `List<E>`    |   [Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types), [Item-29](../Chapter-5/Chapter-5-Item-29-Favor-generic-types)   |
+|   Formal type parameter  |     `E`    |   [Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types)   |
+|   Unbounded wildcard type  |     `List<?>`    |   [Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types)   |
+|   Raw type  |     `List`    |   [Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types)   |
+|   Bounded type parameter  |     `<E extends Number>`    |   [Item-29](../Chapter-5/Chapter-5-Item-29-Favor-generic-types)   |
+|   Recursive type bound  |     `<T extends Comparable<T>>`    |   [Item-30](../Chapter-5/Chapter-5-Item-30-Favor-generic-methods)   |
+|   Bounded wildcard type  |     `List<? extends Number>`    |   [Item-31](../Chapter-5/Chapter-5-Item-31-Use-bounded-wildcards-to-increase-API-flexibility)   |
+|   Generic method  |     `static <E> List<E> asList(E[] a)`   |   [Item-30](../Chapter-5/Chapter-5-Item-30-Favor-generic-methods)   |
+|   Type token  |     `String.class`    |   [Item-33](../Chapter-5/Chapter-5-Item-33-Consider-typesafe-heterogeneous-containers)   |

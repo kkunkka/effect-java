@@ -23,7 +23,7 @@ default boolean removeif(predicate<? super e> filter) {
 }
 ```
 
-这是为 removeIf 方法编写的最好的通用实现，但遗憾的是，它在实际使用的一些 Collection 实现中导致了问题。例如，考虑 `org.apache.commons.collections4.collection.SynchronizedCollection`。这个类来自 Apache Commons 库，类似于 `java.util` 提供的静态工厂`Collections.synchronizedCollection`。Apache 版本还提供了使用客户端提供的对象进行锁定的功能，以代替集合。换句话说，它是一个包装器类（[Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md)），其所有方法在委托给包装集合之前同步锁定对象。
+这是为 removeIf 方法编写的最好的通用实现，但遗憾的是，它在实际使用的一些 Collection 实现中导致了问题。例如，考虑 `org.apache.commons.collections4.collection.SynchronizedCollection`。这个类来自 Apache Commons 库，类似于 `java.util` 提供的静态工厂`Collections.synchronizedCollection`。Apache 版本还提供了使用客户端提供的对象进行锁定的功能，以代替集合。换句话说，它是一个包装器类（[Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance)），其所有方法在委托给包装集合之前同步锁定对象。
 
 Apache SynchronizedCollection 类仍然得到了积极的维护，但是在编写本文时，它没有覆盖 removeIf 方法。如果这个类与 Java 8 一起使用，那么它将继承 removeIf 的默认实现，而 removeIf 并不能维护类的基本承诺：自动同步每个方法调用。默认实现对同步一无所知，也无法访问包含锁定对象的字段。如果客户端在 SynchronizedCollection 实例上调用 removeIf 方法，而另一个线程同时修改了集合，那么可能会导致 ConcurrentModificationException 或其他未指定的行为。
 
@@ -31,7 +31,7 @@ Apache SynchronizedCollection 类仍然得到了积极的维护，但是在编�
 
 **在有默认方法的情况下，接口的现有实现可以在没有错误或警告的情况下通过编译，但是在运行时出错。**虽然这个问题并不常见，但也没有那么罕见。已知 Java 8 中添加到集合接口的少数方法是易受影响的，会影响到现存的一部分实现。
 
-除非别无他法，否则应该避免使用默认方法向现有接口添加新方法，如果非要这么做，你应该仔细考虑现有接口实现是否可能被默认方法破坏。然而，在创建接口时，默认方法非常有助于提供标准方法实现，以减轻实现接口的任务量（[Item-20](/Chapter-4/Chapter-4-Item-20-Prefer-interfaces-to-abstract-classes.md)）。
+除非别无他法，否则应该避免使用默认方法向现有接口添加新方法，如果非要这么做，你应该仔细考虑现有接口实现是否可能被默认方法破坏。然而，在创建接口时，默认方法非常有助于提供标准方法实现，以减轻实现接口的任务量（[Item-20](../Chapter-4/Chapter-4-Item-20-Prefer-interfaces-to-abstract-classes)）。
 
 同样值得注意的是，默认方法的设计并不支持从接口中删除方法或更改现有方法的签名。你不能做出这些更改，除非破坏现有实现。
 

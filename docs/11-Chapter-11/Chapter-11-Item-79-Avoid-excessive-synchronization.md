@@ -1,10 +1,10 @@
 # 第七十九节: 避免过度同步
 
-[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md) 警告我们同步不到位的危险。本条目涉及相反的问题。根据不同的情况，过度的同步可能导致性能下降、死锁甚至不确定行为。
+[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data) 警告我们同步不到位的危险。本条目涉及相反的问题。根据不同的情况，过度的同步可能导致性能下降、死锁甚至不确定行为。
 
-**为避免活性失败和安全故障，永远不要在同步方法或块中将控制权交给客户端。** 换句话说，在同步区域内，不要调用一个设计为被覆盖的方法，或者一个由客户端以函数对象的形式提供的方法（[Item-24](/Chapter-4/Chapter-4-Item-24-Favor-static-member-classes-over-nonstatic.md)）。从具有同步区域的类的角度来看，这种方法是不一样的。类不知道该方法做什么，也无法控制它。Depending on what an alien method does，从同步区域调用它可能会导致异常、死锁或数据损坏。
+**为避免活性失败和安全故障，永远不要在同步方法或块中将控制权交给客户端。** 换句话说，在同步区域内，不要调用一个设计为被覆盖的方法，或者一个由客户端以函数对象的形式提供的方法（[Item-24](../Chapter-4/Chapter-4-Item-24-Favor-static-member-classes-over-nonstatic)）。从具有同步区域的类的角度来看，这种方法是不一样的。类不知道该方法做什么，也无法控制它。Depending on what an alien method does，从同步区域调用它可能会导致异常、死锁或数据损坏。
 
-要使这个问题具体化，请考虑下面的类，它实现了一个可视 Set 包装器。当元素被添加到集合中时，它允许客户端订阅通知。这是观察者模式 [Gamma95]。为了简单起见，当元素从集合中删除时，该类不提供通知，即使要提供通知也很简单。这个类是在 [Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md)（第 90 页）的可复用 ForwardingSet 上实现的：
+要使这个问题具体化，请考虑下面的类，它实现了一个可视 Set 包装器。当元素被添加到集合中时，它允许客户端订阅通知。这是观察者模式 [Gamma95]。为了简单起见，当元素从集合中删除时，该类不提供通知，即使要提供通知也很简单。这个类是在 [Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance)（第 90 页）的可复用 ForwardingSet 上实现的：
 
 ```
 // Broken - invokes alien method from synchronized block!
@@ -60,7 +60,7 @@ public interface SetObserver<E> {
 }
 ```
 
-这个接口在结构上与 `BiConsumer<ObservableSet<E>,E>` 相同。我们选择定义一个自定义函数式接口，因为接口和方法名称使代码更具可读性，而且接口可以演化为包含多个回调。也就是说，使用 BiConsumer 也是合理的（[Item-44](/Chapter-7/Chapter-7-Item-44-Favor-the-use-of-standard-functional-interfaces.md)）。
+这个接口在结构上与 `BiConsumer<ObservableSet<E>,E>` 相同。我们选择定义一个自定义函数式接口，因为接口和方法名称使代码更具可读性，而且接口可以演化为包含多个回调。也就是说，使用 BiConsumer 也是合理的（[Item-44](../Chapter-7/Chapter-7-Item-44-Favor-the-use-of-standard-functional-interfaces)）。
 
 粗略地检查一下，ObservableSet 似乎工作得很好。例如，下面的程序打印从 0 到 99 的数字：
 
@@ -85,11 +85,11 @@ set.addObserver(new SetObserver<>() {
 });
 ```
 
-注意，这个调用使用一个匿名类实例来代替前面调用中使用的 lambda 表达式。这是因为函数对象需要将自己传递给 `s.removeObserver`，而 lambda 表达式不能访问自身（[Item-42](/Chapter-7/Chapter-7-Item-42-Prefer-lambdas-to-anonymous-classes.md)）。
+注意，这个调用使用一个匿名类实例来代替前面调用中使用的 lambda 表达式。这是因为函数对象需要将自己传递给 `s.removeObserver`，而 lambda 表达式不能访问自身（[Item-42](../Chapter-7/Chapter-7-Item-42-Prefer-lambdas-to-anonymous-classes)）。
 
 你可能希望程序打印数字 0 到 23，然后观察者将取消订阅，程序将无声地终止。实际上，它打印这些数字，然后抛出 ConcurrentModificationException。问题在于 notifyElementAdded 在调用观察者的 added 方法时，正在遍历 observers 列表。added 方法调用可观察集的 removeObserver 方法，该方法反过来调用方法 `observers.remove`。现在我们有麻烦了。我们试图在遍历列表的过程中从列表中删除一个元素，这是非法的。notifyElementAdded 方法中的迭代位于一个同步块中，以防止并发修改，但是无法防止迭代线程本身回调到可观察的集合中，也无法防止修改它的 observers 列表。
 
-现在让我们尝试一些奇怪的事情：让我们编写一个观察者来尝试取消订阅，但是它没有直接调用 removeObserver，而是使用另一个线程的服务来执行这个操作。该观察者使用 executor 服务（[Item-80](/Chapter-11/Chapter-11-Item-80-Prefer-executors,-tasks,-and-streams-to-threads.md)）：
+现在让我们尝试一些奇怪的事情：让我们编写一个观察者来尝试取消订阅，但是它没有直接调用 removeObserver，而是使用另一个线程的服务来执行这个操作。该观察者使用 executor 服务（[Item-80](../Chapter-11/Chapter-11-Item-80-Prefer-executors,-tasks,-and-streams-to-threads)）：
 
 ```
 // Observer that uses a background thread needlessly
@@ -132,7 +132,7 @@ private void notifyElementAdded(E element) {
 }
 ```
 
-实际上，有一种更好的方法可以将外来方法调用移出同步块。库提供了一个名为 CopyOnWriteArrayList 的并发集合（[Item-81](/Chapter-11/Chapter-11-Item-81-Prefer-concurrency-utilities-to-wait-and-notify.md)），该集合是为此目的量身定制的。此列表实现是 ArrayList 的变体，其中所有修改操作都是通过复制整个底层数组来实现的。因为从不修改内部数组，所以迭代不需要锁定，而且速度非常快。如果大量使用，CopyOnWriteArrayList 的性能会很差，但是对于很少修改和经常遍历的观察者列表来说，它是完美的。
+实际上，有一种更好的方法可以将外来方法调用移出同步块。库提供了一个名为 CopyOnWriteArrayList 的并发集合（[Item-81](../Chapter-11/Chapter-11-Item-81-Prefer-concurrency-utilities-to-wait-and-notify)），该集合是为此目的量身定制的。此列表实现是 ArrayList 的变体，其中所有修改操作都是通过复制整个底层数组来实现的。因为从不修改内部数组，所以迭代不需要锁定，而且速度非常快。如果大量使用，CopyOnWriteArrayList 的性能会很差，但是对于很少修改和经常遍历的观察者列表来说，它是完美的。
 
 如果将 list 修改为使用 CopyOnWriteArrayList，则不需要更改 ObservableSet 的 add 和 addAll 方法。下面是类的其余部分。请注意，没有任何显式同步：
 
@@ -156,17 +156,17 @@ private void notifyElementAdded(E element) {
 
 在同步区域之外调用的外来方法称为 open call [Goetz06, 10.1.4]。除了防止失败之外，开放调用还可以极大地提高并发性。一个陌生的方法可以运行任意长的时间。如果从同步区域调用了外来方法，其他线程对受保护资源的访问就会遭到不必要的拒绝。
 
-**作为规则，你应该在同步区域内做尽可能少的工作。** 获取锁，检查共享数据，根据需要进行转换，然后删除锁。如果你必须执行一些耗时的活动，请设法将其移出同步区域，而不违反 [Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md) 中的指导原则。
+**作为规则，你应该在同步区域内做尽可能少的工作。** 获取锁，检查共享数据，根据需要进行转换，然后删除锁。如果你必须执行一些耗时的活动，请设法将其移出同步区域，而不违反 [Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data) 中的指导原则。
 
 本条目的第一部分是关于正确性的。现在让我们简要地看一下性能。虽然自 Java 早期以来，同步的成本已经大幅下降，但比以往任何时候都更重要的是：不要过度同步。在多核世界中，过度同步的真正代价不是获得锁所花费的 CPU 时间；这是一种争论：而是失去了并行化的机会，以及由于需要确保每个核心都有一个一致的内存视图而造成的延迟。过度同步的另一个隐藏成本是，它可能限制 VM 优化代码执行的能力。
 
-如果你正在编写一个可变的类，你有两个选择：你可以省略所有同步并允许客户端在需要并发使用时在外部进行同步，或者你可以在内部进行同步，从而使类是线程安全的（[Item-82](/Chapter-11/Chapter-11-Item-82-Document-thread-safety.md)）。只有当你能够通过内部同步实现比通过让客户端在外部锁定整个对象获得高得多的并发性时，才应该选择后者。`java.util` 中的集合（废弃的 Vector 和 Hashtable 除外）采用前一种方法，而 `java.util.concurrent` 中的方法则采用后者（[Item-81](/Chapter-11/Chapter-11-Item-81-Prefer-concurrency-utilities-to-wait-and-notify.md)）。
+如果你正在编写一个可变的类，你有两个选择：你可以省略所有同步并允许客户端在需要并发使用时在外部进行同步，或者你可以在内部进行同步，从而使类是线程安全的（[Item-82](../Chapter-11/Chapter-11-Item-82-Document-thread-safety)）。只有当你能够通过内部同步实现比通过让客户端在外部锁定整个对象获得高得多的并发性时，才应该选择后者。`java.util` 中的集合（废弃的 Vector 和 Hashtable 除外）采用前一种方法，而 `java.util.concurrent` 中的方法则采用后者（[Item-81](../Chapter-11/Chapter-11-Item-81-Prefer-concurrency-utilities-to-wait-and-notify)）。
 
 在 Java 的早期，许多类违反了这些准则。例如，StringBuffer 实例几乎总是由一个线程使用，但是它们执行内部同步。正是由于这个原因，StringBuffer 被 StringBuilder 取代，而 StringBuilder 只是一个未同步的 StringBuffer。类似地，同样，`java.util.Random` 中的线程安全伪随机数生成器被 `java.util.concurrent.ThreadLocalRandom` 中的非同步实现所取代，这也是原因之一。如果有疑问，不要同步你的类，但要记录它不是线程安全的。
 
 如果你在内部同步你的类，你可以使用各种技术来实现高并发性，例如分拆锁、分离锁和非阻塞并发控制。这些技术超出了本书的范围，但是在其他地方也有讨论 [Goetz06, Herlihy08]。
 
-如果一个方法修改了一个静态字段，并且有可能从多个线程调用该方法，则必须在内部同步对该字段的访问（除非该类能够容忍不确定性行为）。多线程客户端不可能对这样的方法执行外部同步，因为不相关的客户端可以在不同步的情况下调用该方法。字段本质上是一个全局变量，即使它是私有的，因为它可以被不相关的客户端读取和修改。[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md) 中的 generateSerialNumber 方法使用的 nextSerialNumber 字段演示了这种情况。
+如果一个方法修改了一个静态字段，并且有可能从多个线程调用该方法，则必须在内部同步对该字段的访问（除非该类能够容忍不确定性行为）。多线程客户端不可能对这样的方法执行外部同步，因为不相关的客户端可以在不同步的情况下调用该方法。字段本质上是一个全局变量，即使它是私有的，因为它可以被不相关的客户端读取和修改。[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data) 中的 generateSerialNumber 方法使用的 nextSerialNumber 字段演示了这种情况。
 
-总之，为了避免死锁和数据损坏，永远不要从同步区域内调用外来方法。更一般地说，将你在同步区域内所做的工作量保持在最小。在设计可变类时，请考虑它是否应该执行自己的同步。在多核时代，比以往任何时候都更重要的是不要过度同步。只有在有充分理由时，才在内部同步类，并清楚地记录你的决定（[Item-82](/Chapter-11/Chapter-11-Item-82-Document-thread-safety.md)）。
+总之，为了避免死锁和数据损坏，永远不要从同步区域内调用外来方法。更一般地说，将你在同步区域内所做的工作量保持在最小。在设计可变类时，请考虑它是否应该执行自己的同步。在多核时代，比以往任何时候都更重要的是不要过度同步。只有在有充分理由时，才在内部同步类，并清楚地记录你的决定（[Item-82](../Chapter-11/Chapter-11-Item-82-Document-thread-safety)）。
 

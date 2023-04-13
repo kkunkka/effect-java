@@ -57,13 +57,13 @@ List<String> topTen = freq.keySet().stream()
 
 注意，我们还没有用它的类 Collectors 对 toList 方法进行限定。**静态导入 Collectors 的所有成员是习惯用法，也是明智的，因为这使流管道更具可读性。**
 
-这段代码中唯一棘手的部分是我们传递给 sorted 的 `comparing(freq::get).reversed()`。comparing 方法是 comparator 的一种构造方法（[Item-14](/Chapter-3/Chapter-3-Item-14-Consider-implementing-Comparable.md)），它具有键提取功能。函数接受一个单词，而「提取」实际上是一个表查找：绑定方法引用 `freq::get` 在 freq 表中查找该单词，并返回该单词在文件中出现的次数。最后，我们在比较器上调用 reverse 函数，我们将单词从最频繁排序到最不频繁进行排序。然后，将流限制为 10 个单词并将它们收集到一个列表中。
+这段代码中唯一棘手的部分是我们传递给 sorted 的 `comparing(freq::get).reversed()`。comparing 方法是 comparator 的一种构造方法（[Item-14](../Chapter-3/Chapter-3-Item-14-Consider-implementing-Comparable)），它具有键提取功能。函数接受一个单词，而「提取」实际上是一个表查找：绑定方法引用 `freq::get` 在 freq 表中查找该单词，并返回该单词在文件中出现的次数。最后，我们在比较器上调用 reverse 函数，我们将单词从最频繁排序到最不频繁进行排序。然后，将流限制为 10 个单词并将它们收集到一个列表中。
 
-前面的代码片段使用 Scanner 的流方法在扫描器上获取流。这个方法是在 Java 9 中添加的。如果使用的是较早的版本，则可以使用类似于 [Item-47](/Chapter-7/Chapter-7-Item-47-Prefer-Collection-to-Stream-as-a-return-type.md)（`streamOf(Iterable<E>)`）中的适配器将实现 Iterator 的扫描程序转换为流。
+前面的代码片段使用 Scanner 的流方法在扫描器上获取流。这个方法是在 Java 9 中添加的。如果使用的是较早的版本，则可以使用类似于 [Item-47](../Chapter-7/Chapter-7-Item-47-Prefer-Collection-to-Stream-as-a-return-type)（`streamOf(Iterable<E>)`）中的适配器将实现 Iterator 的扫描程序转换为流。
 
 那么 Collectors 中的其他 36 个方法呢？它们中的大多数都允许你将流收集到 Map 中，这比将它们收集到真正的集合要复杂得多。每个流元素与一个键和一个值相关联，多个流元素可以与同一个键相关联。
 
-最简单的 Map 收集器是 `toMap(keyMapper, valueMapper)`，它接受两个函数，一个将流元素映射到键，另一个映射到值。我们在 [Item-34](/Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants.md) 中的 fromString 实现中使用了这个收集器来创建枚举的字符串形式到枚举本身的映射：
+最简单的 Map 收集器是 `toMap(keyMapper, valueMapper)`，它接受两个函数，一个将流元素映射到键，另一个映射到值。我们在 [Item-34](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants) 中的 fromString 实现中使用了这个收集器来创建枚举的字符串形式到枚举本身的映射：
 
 ```
 // Using a toMap collector to make a map from string to enum
@@ -97,7 +97,7 @@ toMap 的第三个也是最后一个版本采用了第四个参数，这是一�
 
 还有前三个版本的 toMap 的变体形式，名为 toConcurrentMap，它们可以有效地并行运行，同时生成 ConcurrentHashMap 实例。
 
-除了 toMap 方法之外，collector API 还提供 groupingBy 方法，该方法返回 collector，以生成基于分类器函数将元素分组为类别的映射。分类器函数接受一个元素并返回它所属的类别。这个类别用作元素的 Map 键。groupingBy 方法的最简单版本只接受一个分类器并返回一个 Map，其值是每个类别中所有元素的列表。这是我们在 [Item-45](/Chapter-7/Chapter-7-Item-45-Use-streams-judiciously.md) 的字谜程序中使用的收集器，用于生成从按字母顺序排列的单词到共享字母顺序的单词列表的映射：
+除了 toMap 方法之外，collector API 还提供 groupingBy 方法，该方法返回 collector，以生成基于分类器函数将元素分组为类别的映射。分类器函数接受一个元素并返回它所属的类别。这个类别用作元素的 Map 键。groupingBy 方法的最简单版本只接受一个分类器并返回一个 Map，其值是每个类别中所有元素的列表。这是我们在 [Item-45](../Chapter-7/Chapter-7-Item-45-Use-streams-judiciously) 的字谜程序中使用的收集器，用于生成从按字母顺序排列的单词到共享字母顺序的单词列表的映射：
 
 ```
 words.collect(groupingBy(word -> alphabetize(word)))

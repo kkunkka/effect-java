@@ -58,7 +58,7 @@ public static void main(String[] args) {
 }
 ```
 
-不需要覆盖 equals 方法的一种值类是使用实例控件（[Item-1](/Chapter-2/Chapter-2-Item-1-Consider-static-factory-methods-instead-of-constructors.md)）来确保每个值最多只存在一个对象的类。枚举类型（[Item-34](/Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants.md)）属于这一类。对于这些类，逻辑相等与对象标识相同，因此对象的 equals 方法函数与逻辑 equals 方法相同。
+不需要覆盖 equals 方法的一种值类是使用实例控件（[Item-1](../Chapter-2/Chapter-2-Item-1-Consider-static-factory-methods-instead-of-constructors)）来确保每个值最多只存在一个对象的类。枚举类型（[Item-34](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants)）属于这一类。对于这些类，逻辑相等与对象标识相同，因此对象的 equals 方法函数与逻辑 equals 方法相同。
 
 
 当你覆盖 equals 方法时，你必须遵守它的通用约定。以下是具体内容，来自 Object 规范：
@@ -322,7 +322,7 @@ Liskov 替换原则指出，类型的任何重要属性都应该适用于所有�
 
 **译注：里氏替换原则（Liskov Substitution Principle，LSP）面向对象设计的基本原则之一。里氏替换原则指出：任何父类可以出现的地方，子类一定可以出现。LSP 是继承复用的基石，只有当衍生类可以替换掉父类，软件单位的功能不受到影响时，父类才能真正被复用，而衍生类也能够在父类的基础上增加新的行为。**
 
-虽然没有令人满意的方法来继承一个可实例化的类并添加一个值组件，但是有一个很好的解决方案：遵循 [Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md) 的建议，「Favor composition over inheritance.」。给 ColorPoint 一个私有的 Point 字段和一个 public 视图方法（[Item-6](/Chapter-2/Chapter-2-Item-6-Avoid-creating-unnecessary-objects.md)），而不是让 ColorPoint 继承 Point，该方法返回与这个颜色点相同位置的点：
+虽然没有令人满意的方法来继承一个可实例化的类并添加一个值组件，但是有一个很好的解决方案：遵循 [Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance) 的建议，「Favor composition over inheritance.」。给 ColorPoint 一个私有的 Point 字段和一个 public 视图方法（[Item-6](../Chapter-2/Chapter-2-Item-6-Avoid-creating-unnecessary-objects)），而不是让 ColorPoint 继承 Point，该方法返回与这个颜色点相同位置的点：
 
 ```
 // Adds a value component without violating the equals contract
@@ -356,9 +356,9 @@ public class ColorPoint {
 
 Java 库中有一些类确实继承了一个可实例化的类并添加了一个值组件。例如，`java.sql.Timestamp` 继承 `java.util.Date` 并添加了纳秒字段。如果在同一个集合中使用时间戳和日期对象，或者以其他方式混合使用时间戳和日期对象，那么时间戳的 equals 实现确实违反了对称性，并且可能导致不稳定的行为。Timestamp 类有一个免责声明，警告程序员不要混合使用日期和时间戳。虽然只要将它们分开，就不会遇到麻烦，但是没有什么可以阻止你将它们混合在一起，因此产生的错误可能很难调试。时间戳类的这种行为是错误的，不应该效仿。
 
-注意，你可以向抽象类的子类添加一个值组件，而不违反 equals 约定。这对于遵循 [Item-23](/Chapter-4/Chapter-4-Item-23-Prefer-class-hierarchies-to-tagged-classes.md) 中的建议而得到的类层次结构很重要，「Prefer class hierarchies to tagged classes.」。例如，可以有一个没有值组件的抽象类形状、一个添加半径字段的子类圆和一个添加长度和宽度字段的子类矩形。只要不可能直接创建超类实例，前面显示的那种问题就不会发生。
+注意，你可以向抽象类的子类添加一个值组件，而不违反 equals 约定。这对于遵循 [Item-23](../Chapter-4/Chapter-4-Item-23-Prefer-class-hierarchies-to-tagged-classes) 中的建议而得到的类层次结构很重要，「Prefer class hierarchies to tagged classes.」。例如，可以有一个没有值组件的抽象类形状、一个添加半径字段的子类圆和一个添加长度和宽度字段的子类矩形。只要不可能直接创建超类实例，前面显示的那种问题就不会发生。
 
-**一致性** ，对等约定的第四个要求是，如果两个对象相等，它们必须一直保持相等，除非其中一个（或两个）被修改。换句话说，可变对象可以等于不同时间的不同对象，而不可变对象不能。在编写类时，仔细考虑它是否应该是不可变的（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）。如果你认为应该这样做，那么请确保你的 equals 方法执行了这样的限制，即相等的对象始终是相等的，而不等的对象始终是不等的。
+**一致性** ，对等约定的第四个要求是，如果两个对象相等，它们必须一直保持相等，除非其中一个（或两个）被修改。换句话说，可变对象可以等于不同时间的不同对象，而不可变对象不能。在编写类时，仔细考虑它是否应该是不可变的（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）。如果你认为应该这样做，那么请确保你的 equals 方法执行了这样的限制，即相等的对象始终是相等的，而不等的对象始终是不等的。
 
 无论一个类是否不可变，都不要编写依赖于不可靠资源的 equals 方法。如果你违反了这个禁令，就很难满足一致性要求。例如，`java.net.URL` 的 equals 方法依赖于与 url 相关联的主机的 IP 地址的比较。将主机名转换为 IP 地址可能需要网络访问，而且不能保证随着时间的推移产生相同的结果。这可能会导致 URL 的 equals 方法违反约定，并在实践中造成问题。URL 的 equals 方法的行为是一个很大的错误，不应该被模仿。不幸的是，由于兼容性需求，它不能更改。为了避免这种问题，equals 方法应该只对 memoryresident 对象执行确定性计算。
 
@@ -403,7 +403,7 @@ public boolean equals(Object o) {
 
 一些对象引用字段可能合法地包含 null。为了避免可能出现 NullPointerException，请使用静态方法 `Objects.equals(Object, Object)` 检查这些字段是否相等。
 
-对于某些类，例如上面的 CaseInsensitiveString，字段比较比简单的 equal 测试更复杂。如果是这样，你可能希望存储字段的规范形式，以便 equals 方法可以对规范形式进行廉价的精确比较，而不是更昂贵的非标准比较。这种技术最适合于不可变类（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）；如果对象可以更改，则必须使规范形式保持最新。
+对于某些类，例如上面的 CaseInsensitiveString，字段比较比简单的 equal 测试更复杂。如果是这样，你可能希望存储字段的规范形式，以便 equals 方法可以对规范形式进行廉价的精确比较，而不是更昂贵的非标准比较。这种技术最适合于不可变类（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）；如果对象可以更改，则必须使规范形式保持最新。
 
 equals 方法的性能可能会受到字段比较顺序的影响。为了获得最佳性能，你应该首先比较那些更可能不同、比较成本更低的字段，或者理想情况下两者都比较。不能比较不属于对象逻辑状态的字段，例如用于同步操作的锁字段。你不需要比较派生字段（可以从「重要字段」计算），但是这样做可能会提高 equals 方法的性能。如果派生字段相当于整个对象的摘要描述，那么如果比较失败，比较该字段将节省比较实际数据的开销。例如，假设你有一个多边形类，你缓存这个区域。如果两个多边形的面积不相等，你不需要比较它们的边和顶点。
 
@@ -445,7 +445,7 @@ Here are a few final caveats:
 
 以下是一些最后的警告：
 
-- **当你覆盖 equals 时，也覆盖 hashCode。**（[Item-11](/Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals.md)）
+- **当你覆盖 equals 时，也覆盖 hashCode。**（[Item-11](../Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals)）
 
 - **不要自作聪明。** 如果你只是为了判断相等性而测试字段，那么遵循 equals 约定并不困难。如果你在寻求对等方面过于激进，很容易陷入麻烦。一般来说，考虑到任何形式的混叠都不是一个好主意。例如，File 类不应该尝试将引用同一文件的符号链接等同起来。值得庆幸的是，它不是。
 
@@ -458,9 +458,9 @@ public boolean equals(MyClass o) {
 }
 ```
 
-这里的问题是，这个方法没有覆盖其参数类型为 Object 的 Object.equals，而是重载了它（[Item-52](/Chapter-8/Chapter-8-Item-52-Use-overloading-judiciously.md)）。即使是普通的方法，提供这样一个「强类型的」equals 方法是不可接受的，因为它会导致子类中的重写注释产生误报并提供错误的安全性。
+这里的问题是，这个方法没有覆盖其参数类型为 Object 的 Object.equals，而是重载了它（[Item-52](../Chapter-8/Chapter-8-Item-52-Use-overloading-judiciously)）。即使是普通的方法，提供这样一个「强类型的」equals 方法是不可接受的，因为它会导致子类中的重写注释产生误报并提供错误的安全性。
 
-如本条目所示，一致使用 Override 注释将防止你犯此错误（[Item-40](/Chapter-6/Chapter-6-Item-40-Consistently-use-the-Override-annotation.md)）。这个 equals 方法不会编译，错误消息会告诉你什么是错误的：
+如本条目所示，一致使用 Override 注释将防止你犯此错误（[Item-40](../Chapter-6/Chapter-6-Item-40-Consistently-use-the-Override-annotation)）。这个 equals 方法不会编译，错误消息会告诉你什么是错误的：
 
 ```
 // Still broken, but won’t compile

@@ -34,7 +34,7 @@ public class Name implements Serializable {
 
 从逻辑上讲，名字由三个字符串组成，分别表示姓、名和中间名。Name 的实例字段精确地反映了这个逻辑内容。
 
-**即使你认为默认的序列化形式是合适的，你通常也必须提供 readObject 方法来确保不变性和安全性。** 对于 Name 类而言, readObject 方法必须确保字段 lastName 和 firstName 是非空的。[Item-88](/Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively.md) 和 [Item-90](/Chapter-12/Chapter-12-Item-90-Consider-serialization-proxies-instead-of-serialized-instances.md) 详细讨论了这个问题。
+**即使你认为默认的序列化形式是合适的，你通常也必须提供 readObject 方法来确保不变性和安全性。** 对于 Name 类而言, readObject 方法必须确保字段 lastName 和 firstName 是非空的。[Item-88](../Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively) 和 [Item-90](../Chapter-12/Chapter-12-Item-90-Consider-serialization-proxies-instead-of-serialized-instances) 详细讨论了这个问题。
 
 注意，虽然 lastName、firstName 和 middleName 字段是私有的，但是它们都有文档注释。这是因为这些私有字段定义了一个公共 API，它是类的序列化形式，并且必须对这个公共 API 进行文档化。`@serial` 标记的存在告诉 Javadoc 将此文档放在一个特殊的页面上，该页面记录序列化的形式。
 
@@ -123,9 +123,9 @@ writeObject 做的第一件事是调用 defaultWriteObject, readObject 做的第
 
 无论你是否接受默认的序列化形式，当调用 defaultWriteObject 方法时，没有标记为 transient 的每个实例字段都会被序列化。因此，可以声明为 transient 的每个实例字段都应该做这个声明。这包括派生字段，其值可以从主数据字段（如缓存的哈希值）计算。它还包括一些字段，这些字段的值与 JVM 的一个特定运行相关联，比如表示指向本机数据结构指针的 long 字段。**在决定使字段非 transient 之前，请确信它的值是对象逻辑状态的一部分。** 如果使用自定义序列化表单，大多数或所有实例字段都应该标记为 transient，如上面的 StringList 示例所示。
 
-如果使用默认的序列化形式，并且标记了一个或多个字段为 transient，请记住，当反序列化实例时，这些字段将初始化为默认值：对象引用字段为 null，数字基本类型字段为 0，布尔字段为 false [JLS, 4.12.5]。如果这些值对于任何 transient 字段都是不可接受的，则必须提供一个 readObject 方法，该方法调用 defaultReadObject 方法，然后将 transient 字段恢复为可接受的值（[Item-88](/Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively.md)）。或者，可以采用延迟初始化（[Item-83](/Chapter-11/Chapter-11-Item-83-Use-lazy-initialization-judiciously.md)），在第一次使用这些字段时初始化它们。
+如果使用默认的序列化形式，并且标记了一个或多个字段为 transient，请记住，当反序列化实例时，这些字段将初始化为默认值：对象引用字段为 null，数字基本类型字段为 0，布尔字段为 false [JLS, 4.12.5]。如果这些值对于任何 transient 字段都是不可接受的，则必须提供一个 readObject 方法，该方法调用 defaultReadObject 方法，然后将 transient 字段恢复为可接受的值（[Item-88](../Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively)）。或者，可以采用延迟初始化（[Item-83](../Chapter-11/Chapter-11-Item-83-Use-lazy-initialization-judiciously)），在第一次使用这些字段时初始化它们。
 
-无论你是否使用默认的序列化形式，**必须对对象序列化强制执行任何同步操作，就像对读取对象的整个状态的任何其他方法强制执行的那样。** 例如，如果你有一个线程安全的对象（[Item-82](/Chapter-11/Chapter-11-Item-82-Document-thread-safety.md)），它通过同步每个方法来实现线程安全，并且你选择使用默认的序列化形式，那么使用以下 write-Object 方法：
+无论你是否使用默认的序列化形式，**必须对对象序列化强制执行任何同步操作，就像对读取对象的整个状态的任何其他方法强制执行的那样。** 例如，如果你有一个线程安全的对象（[Item-82](../Chapter-11/Chapter-11-Item-82-Document-thread-safety)），它通过同步每个方法来实现线程安全，并且你选择使用默认的序列化形式，那么使用以下 write-Object 方法：
 
 ```
 // writeObject for synchronized class with default serialized form
@@ -136,7 +136,7 @@ private synchronized void writeObject(ObjectOutputStream s) throws IOException {
 
 如果将同步放在 writeObject 方法中，则必须确保它遵守与其他活动相同的锁排序约束，否则将面临资源排序死锁的风险 [Goetz06, 10.1.5]。
 
-**无论选择哪种序列化形式，都要在编写的每个可序列化类中声明显式的序列版本 UID。** 这消除了序列版本 UID 成为不兼容性的潜在来源（[Item-86](/Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution.md)）。这么做还能获得一个小的性能优势。如果没有提供序列版本 UID，则需要执行高开销的计算在运行时生成一个 UID。
+**无论选择哪种序列化形式，都要在编写的每个可序列化类中声明显式的序列版本 UID。** 这消除了序列版本 UID 成为不兼容性的潜在来源（[Item-86](../Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution)）。这么做还能获得一个小的性能优势。如果没有提供序列版本 UID，则需要执行高开销的计算在运行时生成一个 UID。
 
 声明序列版本 UID 很简单，只要在你的类中增加这一行：
 
@@ -148,4 +148,4 @@ private static final long serialVersionUID = randomLongValue;
 
 如果你希望创建一个新版本的类，它与现有版本不兼容，如果更改序列版本 UID 声明中的值，这将导致反序列化旧版本的序列化实例的操作引发 InvalidClassException。**不要更改序列版本 UID，除非你想破坏与现有序列化所有实例的兼容性。**
 
-总而言之，如果你已经决定一个类应该是可序列化的（[Item-86](/Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution.md)），那么请仔细考虑一下序列化的形式应该是什么。只有在合理描述对象的逻辑状态时，才使用默认的序列化形式；否则，设计一个适合描述对象的自定义序列化形式。设计类的序列化形式应该和设计导出方法花的时间应该一样多，都应该严谨对待（[Item-51](/Chapter-8/Chapter-8-Item-51-Design-method-signatures-carefully.md)）。正如不能从未来版本中删除导出的方法一样，也不能从序列化形式中删除字段；必须永远保存它们，以确保序列化兼容性。选择错误的序列化形式可能会对类的复杂性和性能产生永久性的负面影响。
+总而言之，如果你已经决定一个类应该是可序列化的（[Item-86](../Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution)），那么请仔细考虑一下序列化的形式应该是什么。只有在合理描述对象的逻辑状态时，才使用默认的序列化形式；否则，设计一个适合描述对象的自定义序列化形式。设计类的序列化形式应该和设计导出方法花的时间应该一样多，都应该严谨对待（[Item-51](../Chapter-8/Chapter-8-Item-51-Design-method-signatures-carefully)）。正如不能从未来版本中删除导出的方法一样，也不能从序列化形式中删除字段；必须永远保存它们，以确保序列化兼容性。选择错误的序列化形式可能会对类的复杂性和性能产生永久性的负面影响。

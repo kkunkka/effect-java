@@ -1,6 +1,6 @@
 # 第三十六: 用 EnumSet 替代位字段
 
-如果枚举类型的元素主要在 Set 中使用，传统上使用 int 枚举模式（[Item-34](/Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants.md)），通过不同的 2 平方数为每个常量赋值：
+如果枚举类型的元素主要在 Set 中使用，传统上使用 int 枚举模式（[Item-34](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants)），通过不同的 2 平方数为每个常量赋值：
 
 ```
 // Bit field enumeration constants - OBSOLETE!
@@ -41,6 +41,6 @@ public class Text {
 text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));
 ```
 
-请注意，applyStyles 方法采用 `Set<Style>` 而不是 `EnumSet<Style>`。虽然似乎所有客户端都可能将 EnumSet 传递给该方法，但通常较好的做法是接受接口类型而不是实现类型（[Item-64](/Chapter-9/Chapter-9-Item-64-Refer-to-objects-by-their-interfaces.md)）。这允许特殊的客户端传入其他 Set 实现的可能性。
+请注意，applyStyles 方法采用 `Set<Style>` 而不是 `EnumSet<Style>`。虽然似乎所有客户端都可能将 EnumSet 传递给该方法，但通常较好的做法是接受接口类型而不是实现类型（[Item-64](../Chapter-9/Chapter-9-Item-64-Refer-to-objects-by-their-interfaces)）。这允许特殊的客户端传入其他 Set 实现的可能性。
 
-总之，**因为枚举类型将在 Set 中使用，没有理由用位字段表示它。** EnumSet 类结合了位字段的简洁性和性能，以及 [Item-34](/Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants.md) 中描述的枚举类型的许多优点。EnumSet 的一个真正的缺点是，从 Java 9 开始，它不能创建不可变的 EnumSet，在未来发布的版本中可能会纠正这一点。同时，可以用 `Collections.unmodifiableSet` 包装 EnumSet，但简洁性和性能将受到影响。
+总之，**因为枚举类型将在 Set 中使用，没有理由用位字段表示它。** EnumSet 类结合了位字段的简洁性和性能，以及 [Item-34](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants) 中描述的枚举类型的许多优点。EnumSet 的一个真正的缺点是，从 Java 9 开始，它不能创建不可变的 EnumSet，在未来发布的版本中可能会纠正这一点。同时，可以用 `Collections.unmodifiableSet` 包装 EnumSet，但简洁性和性能将受到影响。

@@ -368,5 +368,5 @@ public class NutritionFacts {
 NutritionFacts cocaCola = new EntityCreator<>(NutritionFacts.class, 240, 8)
         .setValue("calories", 100)
         .setValue("sodium", 35)
-        .setValue("carbohydrate", 27).build();](/Chapter-2/Chapter-2-Item-3-Enforce-the-singleton-property-with-a-private-constructor-or-an-enum-type.md)**
+        .setValue("carbohydrate", 27).build();](../Chapter-2/Chapter-2-Item-3-Enforce-the-singleton-property-with-a-private-constructor-or-an-enum-type)**
 ```

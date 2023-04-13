@@ -2,7 +2,7 @@
 
 许多方法都返回元素序列。在 Java 8 之前，此类方法常见的返回类型是 Collection 集合接口，如 Set 和 List，另外还有 Iterable 以及数组类型。通常，很容易决定使用哪一种类型。标准是一个集合接口。如果方法的存在仅仅是为了支持 for-each 循环，或者无法使返回的序列实现某个集合方法（通常是 `contains(Object)`），则使用 Iterable 接口。如果返回的元素是基本数据类型或有严格的性能要求，则使用数组。在 Java 8 中，流被添加进来，这大大增加了为序列返回方法选择适当返回类型的复杂性。
 
-你可能听说现在流是返回元素序列的明显选择，但是正如 [Item-45](/Chapter-7/Chapter-7-Item-45-Use-streams-judiciously.md) 中所讨论的，流不会让迭代过时：编写好的代码需要明智地将流和迭代结合起来。如果一个 API 只返回一个流，而一些用户希望使用 for-each 循环遍历返回的序列，那么这些用户将会感到不适。这尤其令人沮丧，因为流接口包含 Iterable 接口中惟一的抽象方法，而且流对该方法的规范与 Iterable 的规范兼容。唯一阻止程序员使用 for-each 循环在流上迭代的是流不能扩展 Iterable。
+你可能听说现在流是返回元素序列的明显选择，但是正如 [Item-45](../Chapter-7/Chapter-7-Item-45-Use-streams-judiciously) 中所讨论的，流不会让迭代过时：编写好的代码需要明智地将流和迭代结合起来。如果一个 API 只返回一个流，而一些用户希望使用 for-each 循环遍历返回的序列，那么这些用户将会感到不适。这尤其令人沮丧，因为流接口包含 Iterable 接口中惟一的抽象方法，而且流对该方法的规范与 Iterable 的规范兼容。唯一阻止程序员使用 for-each 循环在流上迭代的是流不能扩展 Iterable。
 
 遗憾的是，这个问题没有好的解决办法。乍一看，似乎将方法引用传递给流的 iterator 方法是可行的。生成的代码可能有点繁琐，不易理解，但并非不合理：
 
@@ -45,7 +45,7 @@ for (ProcessHandle p : iterableOf(ProcessHandle.allProcesses())) {
 }
 ```
 
-注意，[Item-34](/Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants.md) 中 Anagrams 程序的流版本使用 `Files.lines` 读取字典，而迭代版本使用扫描器。`Files.lines` 方法优于扫描器，扫描器在读取文件时静默地接收任何异常。理想情况下，我们在 `Files.lines` 的迭代版本也应该如此。如果一个 API 只提供对一个序列的流访问，而程序员希望用 for-each 语句遍历该序列，那么这是程序员会做出的一种妥协。
+注意，[Item-34](../Chapter-6/Chapter-6-Item-34-Use-enums-instead-of-int-constants) 中 Anagrams 程序的流版本使用 `Files.lines` 读取字典，而迭代版本使用扫描器。`Files.lines` 方法优于扫描器，扫描器在读取文件时静默地接收任何异常。理想情况下，我们在 `Files.lines` 的迭代版本也应该如此。如果一个 API 只提供对一个序列的流访问，而程序员希望用 for-each 语句遍历该序列，那么这是程序员会做出的一种妥协。
 
 相反，如果程序员希望使用流管道来处理序列，那么只提供可迭代的 API 就会有理由让他心烦。JDK 同样没有提供适配器，但是编写适配器非常简单：
 
@@ -121,7 +121,7 @@ public class SubLists {
 }
 ```
 
-注意 `Stream.concat` 方法将空列表添加到返回的流中。还要注意，flatMap 方法（[Item-45](/Chapter-7/Chapter-7-Item-45-Use-streams-judiciously.md)）用于生成由所有前缀的所有后缀组成的单一流。最后，请注意，我们通过映射由 `IntStream.range` 和 `IntStream.rangeClosed` 返回的连续 int 值流来生成前缀和后缀。因此，我们的子列表实现在本质上类似于嵌套的 for 循环：
+注意 `Stream.concat` 方法将空列表添加到返回的流中。还要注意，flatMap 方法（[Item-45](../Chapter-7/Chapter-7-Item-45-Use-streams-judiciously)）用于生成由所有前缀的所有后缀组成的单一流。最后，请注意，我们通过映射由 `IntStream.range` 和 `IntStream.rangeClosed` 返回的连续 int 值流来生成前缀和后缀。因此，我们的子列表实现在本质上类似于嵌套的 for 循环：
 
 ```
 for (int start = 0; start < src.size(); start++)
@@ -129,7 +129,7 @@ for (int start = 0; start < src.size(); start++)
         System.out.println(src.subList(start, end));
 ```
 
-可以将这个 for 循环直接转换为流。结果比我们以前的实现更简洁，但可读性可能稍差。它在形态上类似于 [Item-45](/Chapter-7/Chapter-7-Item-45-Use-streams-judiciously.md) 中 Cartesian 的 streams 代码：
+可以将这个 for 循环直接转换为流。结果比我们以前的实现更简洁，但可读性可能稍差。它在形态上类似于 [Item-45](../Chapter-7/Chapter-7-Item-45-Use-streams-judiciously) 中 Cartesian 的 streams 代码：
 
 ```
 // Returns a stream of all the sublists of its input list

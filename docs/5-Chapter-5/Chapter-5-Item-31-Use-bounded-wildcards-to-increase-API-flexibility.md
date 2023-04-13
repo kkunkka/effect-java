@@ -4,13 +4,13 @@
 
 As noted in Item 28, parameterized types are invariant. In other words, for any two distinct types `Type1` and `Type2`, `List&lt;Type1&gt;` is neither a subtype nor a supertype of `List&lt;Type2&gt;`. Although it is counterintuitive that `List&lt;String&gt;` is not a subtype of `List&lt;Object&gt;`, it really does make sense. You can put any object into a `List&lt;Object&gt;`, but you can put only strings into a `List&lt;String&gt;`. Since a `List&lt;String&gt;` can’t do everything a `List&lt;Object&gt;` can, it isn’t a subtype (by the Liskov substitution principal, Item 10).
 
-如 [Item-28](/Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays.md) 所示，参数化类型是不可变的。换句话说，对于任意两种不同类型 `Type1` 和 `Type2`，`List&lt;Type1&gt;` 既不是 `List&lt;Type2&gt;` 的子类型，也不是它的父类。虽然 `List&lt;String&gt;` 不是 `List&lt;Object&gt;` 的子类型，这和习惯的直觉不符，但它确实有意义。你可以将任何对象放入 `List&lt;Object&gt;`，但只能将字符串放入 `List&lt;String&gt;`。因为 `List&lt;String&gt;` 不能做 `List&lt;Object&gt;` 能做的所有事情，所以它不是子类型（可通过 Liskov 替换原则来理解这一点，[Item-10](/Chapter-3/Chapter-3-Item-10-Obey-the-general-contract-when-overriding-equals.md)）。
+如 [Item-28](../Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays) 所示，参数化类型是不可变的。换句话说，对于任意两种不同类型 `Type1` 和 `Type2`，`List&lt;Type1&gt;` 既不是 `List&lt;Type2&gt;` 的子类型，也不是它的父类。虽然 `List&lt;String&gt;` 不是 `List&lt;Object&gt;` 的子类型，这和习惯的直觉不符，但它确实有意义。你可以将任何对象放入 `List&lt;Object&gt;`，但只能将字符串放入 `List&lt;String&gt;`。因为 `List&lt;String&gt;` 不能做 `List&lt;Object&gt;` 能做的所有事情，所以它不是子类型（可通过 Liskov 替换原则来理解这一点，[Item-10](../Chapter-3/Chapter-3-Item-10-Obey-the-general-contract-when-overriding-equals)）。
 
 **译注：里氏替换原则（Liskov Substitution Principle，LSP）面向对象设计的基本原则之一。里氏替换原则指出：任何父类可以出现的地方，子类一定可以出现。LSP 是继承复用的基石，只有当衍生类可以替换掉父类，软件单位的功能不受到影响时，父类才能真正被复用，而衍生类也能够在父类的基础上增加新的行为。**
 
 Sometimes you need more flexibility than invariant typing can provide. Consider the Stack class from Item 29. To refresh your memory, here is its public API:
 
-有时你需要获得比不可变类型更多的灵活性。考虑 [Item-29](/Chapter-5/Chapter-5-Item-29-Favor-generic-types.md) 中的堆栈类。以下是它的公共 API：
+有时你需要获得比不可变类型更多的灵活性。考虑 [Item-29](../Chapter-5/Chapter-5-Item-29-Favor-generic-types) 中的堆栈类。以下是它的公共 API：
 
 ```
 public class Stack&lt;E&gt; {
@@ -56,7 +56,7 @@ cannot be converted to Iterable&lt;Number&gt;
 
 Luckily, there’s a way out. The language provides a special kind of parameterized type call a bounded wildcard type to deal with situations like this. The type of the input parameter to pushAll should not be “Iterable of E” but “Iterable of some subtype of E,” and there is a wildcard type that means precisely that: Iterable&lt;? extends E&gt;. (The use of the keyword extends is slightly misleading: recall from Item 29 that subtype is defined so that every type is a subtype of itself, even though it does not extend itself.) Let’s modify pushAll to use this type:
 
-幸运的是，有一种解决方法。Java 提供了一种特殊的参数化类型，`有界通配符类型`来处理这种情况。pushAll 的输入参数的类型不应该是「E 的 Iterable 接口」，而应该是「E 的某个子类型的 Iterable 接口」，并且有一个通配符类型，它的确切含义是：`Iterable&lt;? extends E&gt;`（关键字 extends 的使用稍微有些误导：回想一下 [Item-29](/Chapter-5/Chapter-5-Item-29-Favor-generic-types.md)，定义了子类型，以便每个类型都是其本身的子类型，即使它没有扩展自己。）让我们修改 pushAll 来使用这种类型：
+幸运的是，有一种解决方法。Java 提供了一种特殊的参数化类型，`有界通配符类型`来处理这种情况。pushAll 的输入参数的类型不应该是「E 的 Iterable 接口」，而应该是「E 的某个子类型的 Iterable 接口」，并且有一个通配符类型，它的确切含义是：`Iterable&lt;? extends E&gt;`（关键字 extends 的使用稍微有些误导：回想一下 [Item-29](../Chapter-5/Chapter-5-Item-29-Favor-generic-types)，定义了子类型，以便每个类型都是其本身的子类型，即使它没有扩展自己。）让我们修改 pushAll 来使用这种类型：
 
 ```
 // Wildcard type for a parameter that serves as an E producer
@@ -118,7 +118,7 @@ In other words, if a parameterized type represents a T producer, use `&lt;? exte
 
 With this mnemonic in mind, let’s take a look at some method and constructor declarations from previous items in this chapter. The Chooser constructor in Item 28 has this declaration:
 
-记住这个助记符后，再让我们看一看本章前面提及的一些方法和构造函数声明。[Item-28](/Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays.md) 中的 Chooser 构造函数有如下声明：
+记住这个助记符后，再让我们看一看本章前面提及的一些方法和构造函数声明。[Item-28](../Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays) 中的 Chooser 构造函数有如下声明：
 
 ```
 public Chooser(Collection&lt;T&gt; choices)
@@ -139,7 +139,7 @@ And would this change make any difference in practice? Yes, it would. Suppose yo
 
 Now let’s look at the union method from Item 30. Here is the declaration:
 
-现在让我们看看 [Item-30](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md) 中的 union 方法。以下是声明：
+现在让我们看看 [Item-30](../Chapter-5/Chapter-5-Item-30-Favor-generic-methods) 中的 union 方法。以下是声明：
 
 ```
 public static &lt;E&gt; Set&lt;E&gt; union(Set&lt;E&gt; s1, Set&lt;E&gt; s2)
@@ -192,7 +192,7 @@ Set&lt;Number&gt; numbers = Union.&lt;Number&gt;union(integers, doubles);
 
 Next let’s turn our attention to the max method in Item 30. Here is the original declaration:
 
-接下来让我们将注意力转到 [Item-30](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md) 中的 max 方法。以下是原始声明：
+接下来让我们将注意力转到 [Item-30](../Chapter-5/Chapter-5-Item-30-Favor-generic-methods) 中的 max 方法。以下是原始声明：
 
 ```
 public static &lt;T extends Comparable&lt;T&gt;&gt; T max(List&lt;T&gt; list)
@@ -224,7 +224,7 @@ The reason that you can’t apply the original method declaration to this list i
 
 There is one more wildcard-related topic that bears discussing. There is a duality between type parameters and wildcards, and many methods can be declared using one or the other. For example, here are two possible declarations for a static method to swap two indexed items in a list. The first uses an unbounded type parameter (Item 30) and the second an unbounded wildcard:
 
-还有一个与通配符相关的主题值得讨论。类型参数和通配符之间存在对偶性，可以使用其中一种方法声明许多方法。例如，下面是静态方法的两种可能声明，用于交换列表中的两个索引项。第一个使用无界类型参数（[Item-30](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md)），第二个使用无界通配符：
+还有一个与通配符相关的主题值得讨论。类型参数和通配符之间存在对偶性，可以使用其中一种方法声明许多方法。例如，下面是静态方法的两种可能声明，用于交换列表中的两个索引项。第一个使用无界类型参数（[Item-30](../Chapter-5/Chapter-5-Item-30-Favor-generic-methods)），第二个使用无界通配符：
 
 ```
 // Two possible declarations for the swap method
@@ -279,8 +279,3 @@ swapHelper 方法知道 list 是一个 `List&lt;E&gt;`。因此，它知道它�
 In summary, using wildcard types in your APIs, while tricky, makes the APIs far more flexible. If you write a library that will be widely used, the proper use of wildcard types should be considered mandatory. Remember the basic rule: producer-extends, consumer-super (PECS). Also remember that all comparables and comparators are consumers.
 
 总之，在 API 中使用通配符类型虽然很棘手，但可以使其更加灵活。如果你编写的库将被广泛使用，则必须考虑通配符类型的正确使用。记住基本规则：生产者使用 extends，消费者使用 super（PECS）。还要记住，所有的 comparable 和 comparator 都是消费者。
-
----
-**[Back to contents of the chapter（返回章节目录）](/Chapter-5/Chapter-5-Introduction.md)**
-- **Previous Item（上一条目）：[Item 30: Favor generic methods（优先使用泛型方法）](/Chapter-5/Chapter-5-Item-30-Favor-generic-methods.md)**
-- **Next Item（下一条目）：[Item 32: Combine generics and varargs judiciously（明智地合用泛型和可变参数）](/Chapter-5/Chapter-5-Item-32-Combine-generics-and-varargs-judiciously.md)**

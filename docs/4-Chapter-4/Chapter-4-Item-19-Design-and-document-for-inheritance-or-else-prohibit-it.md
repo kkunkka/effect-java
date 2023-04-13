@@ -1,6 +1,6 @@
 # 第十九节继承要设计良好并且具有文档，否则禁止使用
 
-[Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md) 提醒你注意：将不是为继承设计并且缺少文档的「外部」类进行子类化的危险。那么，为继承而设计并且具备文档的类意味着什么呢？
+[Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance) 提醒你注意：将不是为继承设计并且缺少文档的「外部」类进行子类化的危险。那么，为继承而设计并且具备文档的类意味着什么呢？
 
 首先，类必须精确地在文档中记录覆盖任何方法的效果。换句话说，类必须在文档中记录它对可覆盖方法的自用性。对于每个公共或受保护的方法，文档必须指出方法调用的可覆盖方法、调用顺序以及每次调用的结果如何影响后续处理过程。（可覆盖的意思是非 final 的，公共的或受保护的。）更一般地说，类必须记录它可能调用可覆盖方法的所有情况。例如，可能调用来自后台线程或静态初始化器的方法。
 
@@ -10,7 +10,7 @@
 > 从此集合中移除指定元素的单个实例，如果存在（可选操作）。更正式地说，如果此集合包含一个或多个这样的元素，则删除元素 e，使得 `Objects.equals(o, e)`，如果此 collection 包含指定的元素，则返回 true（或等效地，如果此集合因调用而更改）。  
 > 实现需求：这个实现遍历集合，寻找指定的元素。如果找到元素，则使用迭代器的 remove 方法从集合中删除元素。注意，如果这个集合的迭代器方法返回的迭代器没有实现 remove 方法，并且这个集合包含指定的对象，那么这个实现将抛出 UnsupportedOperationException。
 
-这篇文档无疑说明了重写迭代器方法将影响 remove 方法的行为。它还准确地描述了迭代器方法返回的迭代器的行为将如何影响 remove 方法的行为。与 [Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md) 中的情况相反，在 [Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md) 中，程序员子类化 HashSet 不能简单地说覆盖 add 方法是否会影响 addAll 方法的行为。
+这篇文档无疑说明了重写迭代器方法将影响 remove 方法的行为。它还准确地描述了迭代器方法返回的迭代器的行为将如何影响 remove 方法的行为。与 [Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance) 中的情况相反，在 [Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance) 中，程序员子类化 HashSet 不能简单地说覆盖 add 方法是否会影响 addAll 方法的行为。
 
 但是，这是否违背了一个格言：好的 API 文档应该描述一个给定的方法做什么，而不是如何做？是的，它确实违背了！这是继承违反封装这一事实的不幸结果。要为一个类编制文档，使其能够安全地子类化，你必须描述实现细节，否则这些细节应该是未指定的。
 
@@ -75,19 +75,19 @@ public final class Sub extends Super {
 
 注意，从构造函数调用私有方法、最终方法和静态方法是安全的，它们都是不可覆盖的。
 
-可克隆和可序列化的接口在设计继承时存在特殊的困难。对于为继承而设计的类来说，实现这两种接口都不是一个好主意，因为它们给扩展类的程序员带来了沉重的负担。但是，你可以采取一些特殊的操作来允许子类实现这些接口，而无需强制它们这样做。[Item-13](/Chapter-3/Chapter-3-Item-13-Override-clone-judiciously.md) 和 [Item-86](/Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution.md) 叙述了这些行动。
+可克隆和可序列化的接口在设计继承时存在特殊的困难。对于为继承而设计的类来说，实现这两种接口都不是一个好主意，因为它们给扩展类的程序员带来了沉重的负担。但是，你可以采取一些特殊的操作来允许子类实现这些接口，而无需强制它们这样做。[Item-13](../Chapter-3/Chapter-3-Item-13-Override-clone-judiciously) 和 [Item-86](../Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution) 叙述了这些行动。
 
 如果你确实决定在为继承而设计的类中实现 Cloneable 或 Serializable，那么你应该知道，由于 clone 和 readObject 方法的行为与构造函数非常相似，因此存在类似的限制：clone 和 readObject 都不能直接或间接调用可覆盖的方法。对于 readObject，覆盖方法将在子类的状态反序列化之前运行。在 clone 的情况下，覆盖方法将在子类的 clone 方法有机会修复 clone 的状态之前运行。在任何一种情况下，程序失败都可能随之而来。在 clone 的情况下，失败可以破坏原始对象和 clone。例如，如果覆盖方法假设它正在修改对象的深层结构的 clone 副本，但是复制还没有完成，那么就会发生这种情况。
 
 最后，如果你决定在一个为继承而设计的类中实现 Serializable，并且这个类有一个 readResolve 或 writeReplace 方法，那么你必须使 readResolve 或 writeReplace 方法为 protected，而不是 private。如果这些方法是 private 的，它们将被子类静静地忽略。这是实现细节成为类 API 允许继承的一部分的又一种情况。
 
-到目前为止，显然为继承而设计一个类需要付出很大的努力，并且对类有很大的限制。这不是一个可以轻易作出的决定。在某些情况下，这样做显然是正确的，例如抽象类，包括接口的骨架实现（[Item-20](/Chapter-4/Chapter-4-Item-20-Prefer-interfaces-to-abstract-classes.md)）。还有一些情况显然是错误的，比如不可变类（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）。
+到目前为止，显然为继承而设计一个类需要付出很大的努力，并且对类有很大的限制。这不是一个可以轻易作出的决定。在某些情况下，这样做显然是正确的，例如抽象类，包括接口的骨架实现（[Item-20](../Chapter-4/Chapter-4-Item-20-Prefer-interfaces-to-abstract-classes)）。还有一些情况显然是错误的，比如不可变类（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）。
 
 但是普通的具体类呢？传统上，它们既不是最终的，也不是为子类化而设计和记录的，但这种状态是危险的。每当在这样的类中进行更改时，扩展类的子类就有可能中断。这不仅仅是一个理论问题。在修改未为继承而设计和记录文档的非最终具体类的内部结构后，接收与子类相关的 bug 报告并不罕见。
 
-这个问题的最佳解决方案是禁止在没有设计和文档记录的类中进行子类化。有两种方法可以禁止子类化。两者中比较容易的是声明类 final。另一种方法是将所有构造函数变为私有或包私有，并在构造函数的位置添加公共静态工厂。这个替代方案提供了内部使用子类的灵活性，在 [Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md) 中进行了讨论。两种方法都可以接受。
+这个问题的最佳解决方案是禁止在没有设计和文档记录的类中进行子类化。有两种方法可以禁止子类化。两者中比较容易的是声明类 final。另一种方法是将所有构造函数变为私有或包私有，并在构造函数的位置添加公共静态工厂。这个替代方案提供了内部使用子类的灵活性，在 [Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability) 中进行了讨论。两种方法都可以接受。
 
-这个建议可能有点争议，因为许多程序员已经习惯了子类化普通的具体类，以添加工具、通知和同步等功能或限制功能。如果一个类实现了某个接口，该接口捕获了它的本质，例如 Set、List 或 Map，那么你不应该对禁止子类化感到内疚。在 [Item-18](/Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance.md) 中描述的包装器类模式提供了一种优于继承的方法来增强功能。
+这个建议可能有点争议，因为许多程序员已经习惯了子类化普通的具体类，以添加工具、通知和同步等功能或限制功能。如果一个类实现了某个接口，该接口捕获了它的本质，例如 Set、List 或 Map，那么你不应该对禁止子类化感到内疚。在 [Item-18](../Chapter-4/Chapter-4-Item-18-Favor-composition-over-inheritance) 中描述的包装器类模式提供了一种优于继承的方法来增强功能。
 
 如果一个具体的类没有实现一个标准的接口，那么你可能会因为禁止继承而给一些程序员带来不便。如果你认为必须允许继承此类类，那么一种合理的方法是确保该类永远不会调用其任何可重写的方法，并记录这一事实。换句话说，消除类的自用 overridable
 

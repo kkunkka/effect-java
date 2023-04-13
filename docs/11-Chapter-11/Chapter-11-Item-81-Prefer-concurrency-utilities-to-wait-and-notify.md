@@ -2,11 +2,11 @@
 
 这本书的第一版专门介绍了 wait 和 notify 的正确用法 [Bloch01, item 50]。这些建议仍然有效，并在本条目末尾作了总结，但这一建议已远不如从前重要。这是因为使用 wait 和 notify 的理由要少得多。自 Java 5 以来，该平台提供了更高级别的并发实用工具，可以执行以前必须在 wait 和 notify 上手工编写代码的操作。**考虑到正确使用 wait 和 notify 的困难，你应该使用更高级别的并发实用工具。**
 
-`java.util.concurrent` 中级别较高的实用工具可分为三类：Executor 框架，[Item-80](/Chapter-11/Chapter-11-Item-80-Prefer-executors,-tasks,-and-streams-to-threads.md) 简要介绍了该框架；并发集合；同步器。本条目简要介绍并发集合和同步器。
+`java.util.concurrent` 中级别较高的实用工具可分为三类：Executor 框架，[Item-80](../Chapter-11/Chapter-11-Item-80-Prefer-executors,-tasks,-and-streams-to-threads) 简要介绍了该框架；并发集合；同步器。本条目简要介绍并发集合和同步器。
 
-并发集合是标准集合接口，如 List、Queue 和 Map 的高性能并发实现。为了提供高并发性，这些实现在内部管理它们自己的同步（[Item-79](/Chapter-11/Chapter-11-Item-79-Avoid-excessive-synchronization.md)）。因此，**不可能从并发集合中排除并发活动；锁定它只会使程序变慢。**
+并发集合是标准集合接口，如 List、Queue 和 Map 的高性能并发实现。为了提供高并发性，这些实现在内部管理它们自己的同步（[Item-79](../Chapter-11/Chapter-11-Item-79-Avoid-excessive-synchronization)）。因此，**不可能从并发集合中排除并发活动；锁定它只会使程序变慢。**
 
-因为不能排除并发集合上的并发活动，所以也不能原子地组合对它们的方法调用。因此，并发集合接口配备了依赖于状态的修改操作，这些操作将多个基本操作组合成单个原子操作。这些操作在并发集合上非常有用，因此使用默认方法（[Item-21](/Chapter-4/Chapter-4-Item-21-Design-interfaces-for-posterity.md)）将它们添加到 Java 8 中相应的集合接口。
+因为不能排除并发集合上的并发活动，所以也不能原子地组合对它们的方法调用。因此，并发集合接口配备了依赖于状态的修改操作，这些操作将多个基本操作组合成单个原子操作。这些操作在并发集合上非常有用，因此使用默认方法（[Item-21](../Chapter-4/Chapter-4-Item-21-Design-interfaces-for-posterity)）将它们添加到 Java 8 中相应的集合接口。
 
 例如，Map 的 `putIfAbsent(key, value)` 方法为一个没有映射的键插入一个映射，并返回与键关联的前一个值，如果没有，则返回 null。这使得实现线程安全的规范化 Map 变得很容易。这个方法模拟了 `String.intern` 的行为。
 
@@ -36,7 +36,7 @@ public static String intern(String s) {
 
 除了提供优秀的并发性，ConcurrentHashMap 还非常快。在我的机器上，上面的 intern 方法比 `String.intern` 快六倍多（但是请记住，`String.intern` 必须使用一些策略来防止在长时间运行的应用程序中内存泄漏）。并发集合使同步集合在很大程度上过时。例如，**使用 ConcurrentHashMap 而不是 `Collections.synchronizedMap`。** 只要用并发 Map 替换同步 Map 就可以显著提高并发应用程序的性能。
 
-一些集合接口使用阻塞操作进行了扩展，这些操作将等待（或阻塞）成功执行。例如，BlockingQueue 扩展了 Queue 并添加了几个方法，包括 take，它从队列中删除并返回首个元素，如果队列为空，则等待。这允许将阻塞队列用于工作队列（也称为生产者-消费者队列），一个或多个生产者线程将工作项添加到该工作队列中，一个或多个消费者线程将工作项从该工作队列中取出并在这些工作项可用时处理它们。正如你所期望的，大多数 ExecutorService 实现，包括 ThreadPoolExecutor，都使用 BlockingQueue（[Item-80](/Chapter-11/Chapter-11-Item-80-Prefer-executors,-tasks,-and-streams-to-threads.md)）。
+一些集合接口使用阻塞操作进行了扩展，这些操作将等待（或阻塞）成功执行。例如，BlockingQueue 扩展了 Queue 并添加了几个方法，包括 take，它从队列中删除并返回首个元素，如果队列为空，则等待。这允许将阻塞队列用于工作队列（也称为生产者-消费者队列），一个或多个生产者线程将工作项添加到该工作队列中，一个或多个消费者线程将工作项从该工作队列中取出并在这些工作项可用时处理它们。正如你所期望的，大多数 ExecutorService 实现，包括 ThreadPoolExecutor，都使用 BlockingQueue（[Item-80](../Chapter-11/Chapter-11-Item-80-Prefer-executors,-tasks,-and-streams-to-threads)）。
 
 同步器是允许线程彼此等待的对象，允许它们协调各自的活动。最常用的同步器是 CountDownLatch 和 Semaphore。较不常用的是 CyclicBarrier 和 Exchanger。最强大的同步器是 Phaser。
 

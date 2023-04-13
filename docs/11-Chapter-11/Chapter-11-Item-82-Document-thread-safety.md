@@ -1,12 +1,12 @@
 # 第八十二节: 文档应包含线程安全属性
 
-类在其方法并发使用时的行为是其与客户端约定的重要组成部分。如果你没有记录类在这一方面的行为，那么它的用户将被迫做出假设。如果这些假设是错误的，生成的程序可能缺少足够的同步（[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md)）或过度的同步（[Item-79](/Chapter-11/Chapter-11-Item-79-Avoid-excessive-synchronization.md)）。无论哪种情况，都可能导致严重的错误。
+类在其方法并发使用时的行为是其与客户端约定的重要组成部分。如果你没有记录类在这一方面的行为，那么它的用户将被迫做出假设。如果这些假设是错误的，生成的程序可能缺少足够的同步（[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data)）或过度的同步（[Item-79](../Chapter-11/Chapter-11-Item-79-Avoid-excessive-synchronization)）。无论哪种情况，都可能导致严重的错误。
 
 你可能听说过，可以通过在方法的文档中查找 synchronized 修饰符来判断方法是否线程安全。这个观点有好些方面是错误的。在正常操作中，Javadoc 的输出中没有包含同步修饰符，这是有原因的。方法声明中 synchronized 修饰符的存在是实现细节，而不是其 API 的一部分。**它不能可靠地表明方法是线程安全的。**
 
 此外，声称 synchronized 修饰符的存在就足以记录线程安全性，这个观点是对线程安全性属性的误解，认为要么全有要么全无。实际上，线程安全有几个级别。**要启用安全的并发使用，类必须清楚地记录它支持的线程安全级别。** 下面的列表总结了线程安全级别。它并非详尽无遗，但涵盖以下常见情况：
 
-- 不可变的。这个类的实例看起来是常量。不需要外部同步。示例包括 String、Long 和 BigInteger（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）。
+- 不可变的。这个类的实例看起来是常量。不需要外部同步。示例包括 String、Long 和 BigInteger（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）。
 
 - 无条件线程安全。该类的实例是可变的，但是该类具有足够的内部同步，因此无需任何外部同步即可并发地使用该类的实例。例如 AtomicLong 和 ConcurrentHashMap。
 
@@ -14,7 +14,7 @@
 
 - 非线程安全。该类的实例是可变的。要并发地使用它们，客户端必须使用外部同步来包围每个方法调用（或调用序列）。这样的例子包括通用的集合实现，例如 ArrayList 和 HashMap。
 
-- 线程对立。即使每个方法调用都被外部同步包围，该类对于并发使用也是不安全的。线程对立通常是由于在不同步的情况下修改静态数据而导致的。没有人故意编写线程对立类；此类通常是由于没有考虑并发性而导致的。当发现类或方法与线程不相容时，通常将其修复或弃用。[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md) 中的 generateSerialNumber 方法在没有内部同步的情况下是线程对立的，如第 322 页所述。
+- 线程对立。即使每个方法调用都被外部同步包围，该类对于并发使用也是不安全的。线程对立通常是由于在不同步的情况下修改静态数据而导致的。没有人故意编写线程对立类；此类通常是由于没有考虑并发性而导致的。当发现类或方法与线程不相容时，通常将其修复或弃用。[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data) 中的 generateSerialNumber 方法在没有内部同步的情况下是线程对立的，如第 322 页所述。
 
 这些类别（不包括线程对立类）大致对应于《Java Concurrency in Practice》中的线程安全注解，分别为 Immutable、ThreadSafe 和 NotThreadSafe [Goetz06, Appendix A]。上面分类中的无条件线程安全和有条件的线程安全都包含在 ThreadSafe 注解中。
 
@@ -50,12 +50,12 @@ public void foo() {
 }
 ```
 
-因为私有锁对象在类之外是不可访问的，所以客户端不可能干扰对象的同步。实际上，我们通过将锁对象封装在它同步的对象中，是在应用 [Item-15](/Chapter-4/Chapter-4-Item-15-Minimize-the-accessibility-of-classes-and-members.md) 的建议。
+因为私有锁对象在类之外是不可访问的，所以客户端不可能干扰对象的同步。实际上，我们通过将锁对象封装在它同步的对象中，是在应用 [Item-15](../Chapter-4/Chapter-4-Item-15-Minimize-the-accessibility-of-classes-and-members) 的建议。
 
-注意，lock 字段被声明为 final。这可以防止你无意中更改它的内容，这可能导致灾难性的非同步访问（[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md)）。我们正在应用 [Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md) 的建议，最小化锁字段的可变性。**Lock 字段应该始终声明为 final。** 无论使用普通的监视器锁（如上所示）还是 `java.util.concurrent` 包中的锁，都是这样。
+注意，lock 字段被声明为 final。这可以防止你无意中更改它的内容，这可能导致灾难性的非同步访问（[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data)）。我们正在应用 [Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability) 的建议，最小化锁字段的可变性。**Lock 字段应该始终声明为 final。** 无论使用普通的监视器锁（如上所示）还是 `java.util.concurrent` 包中的锁，都是这样。
 
 私有锁对象用法只能在无条件的线程安全类上使用。有条件的线程安全类不能使用这种用法，因为它们必须在文档中记录，在执行某些方法调用序列时要获取哪些锁。
 
-私有锁对象用法特别适合为继承而设计的类（[Item-19](/Chapter-4/Chapter-4-Item-19-Design-and-document-for-inheritance-or-else-prohibit-it.md)）。如果这样一个类要使用它的实例进行锁定，那么子类很容易在无意中干扰基类的操作，反之亦然。通过为不同的目的使用相同的锁，子类和基类最终可能「踩到对方的脚趾头」。这不仅仅是一个理论问题，它就发生在 Thread 类中 [Bloch05, Puzzle 77]。
+私有锁对象用法特别适合为继承而设计的类（[Item-19](../Chapter-4/Chapter-4-Item-19-Design-and-document-for-inheritance-or-else-prohibit-it)）。如果这样一个类要使用它的实例进行锁定，那么子类很容易在无意中干扰基类的操作，反之亦然。通过为不同的目的使用相同的锁，子类和基类最终可能「踩到对方的脚趾头」。这不仅仅是一个理论问题，它就发生在 Thread 类中 [Bloch05, Puzzle 77]。
 
 总之，每个类都应该措辞严谨的描述或使用线程安全注解清楚地记录其线程安全属性。synchronized 修饰符在文档中没有任何作用。有条件的线程安全类必须记录哪些方法调用序列需要外部同步，以及在执行这些序列时需要获取哪些锁。如果你编写一个无条件线程安全的类，请考虑使用一个私有锁对象来代替同步方法。这将保护你免受客户端和子类的同步干扰，并为你提供更大的灵活性，以便在后续的版本中采用复杂的并发控制方式。

@@ -1,6 +1,6 @@
 # 第五十八节: for-each 循环优于传统的 for 循环
 
-正如在 [Item-45](/Chapter-7/Chapter-7-Item-45-Use-streams-judiciously.md) 中所讨论的，一些任务最好使用流来完成，其他任务最好使用 iteration。下面是使用一个传统的 for 循环来遍历一个集合：
+正如在 [Item-45](../Chapter-7/Chapter-7-Item-45-Use-streams-judiciously) 中所讨论的，一些任务最好使用流来完成，其他任务最好使用 iteration。下面是使用一个传统的 for 循环来遍历一个集合：
 
 ```
 // Not the best way to iterate over a collection!
@@ -19,7 +19,7 @@ for (int i = 0; i < a.length; i++) {
 }
 ```
 
-这些习惯用法比 while 循环更好（[Item-57](/Chapter-9/Chapter-9-Item-57-Minimize-the-scope-of-local-variables.md)），但是它们并不完美。迭代器和索引变量都很混乱（你只需要元素）。此外，它们有出错的可能。迭代器在每个循环中出现三次，索引变量出现四次，这使得有很多机会使用到错误的变量。如果这样做，就不能保证编译器会捕捉到问题。最后，这两个循环区别很大，（第一个例子）还需要额外注意容器类型，并给类型转换增加小麻烦。
+这些习惯用法比 while 循环更好（[Item-57](../Chapter-9/Chapter-9-Item-57-Minimize-the-scope-of-local-variables)），但是它们并不完美。迭代器和索引变量都很混乱（你只需要元素）。此外，它们有出错的可能。迭代器在每个循环中出现三次，索引变量出现四次，这使得有很多机会使用到错误的变量。如果这样做，就不能保证编译器会捕捉到问题。最后，这两个循环区别很大，（第一个例子）还需要额外注意容器类型，并给类型转换增加小麻烦。
 
 for-each 循环（官方称为「enhanced for 语句」）解决了所有这些问题。它通过隐藏迭代器或索引变量来消除混乱和出错的机会。由此产生的习惯用法同样适用于集合和数组，从而简化了将容器的实现类型从一种转换为另一种的过程：
 

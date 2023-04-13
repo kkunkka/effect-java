@@ -1,10 +1,10 @@
 # 第三十二节: 明智地合用泛型和可变参数
 
-可变参数方法（[Item-53](/Chapter-8/Chapter-8-Item-53-Use-varargs-judiciously.md)）和泛型都是在 Java 5 中添加的，因此你可能认为它们能够优雅地交互；可悲的是，他们并不能。可变参数的目的是允许客户端向方法传递可变数量的参数，但这是一个抽象泄漏：当你调用可变参数方法时，将创建一个数组来保存参数；该数组本应是实现细节，却是可见的。因此，当可变参数具有泛型或参数化类型时，会出现令人困惑的编译器警告。
+可变参数方法（[Item-53](../Chapter-8/Chapter-8-Item-53-Use-varargs-judiciously)）和泛型都是在 Java 5 中添加的，因此你可能认为它们能够优雅地交互；可悲的是，他们并不能。可变参数的目的是允许客户端向方法传递可变数量的参数，但这是一个抽象泄漏：当你调用可变参数方法时，将创建一个数组来保存参数；该数组本应是实现细节，却是可见的。因此，当可变参数具有泛型或参数化类型时，会出现令人困惑的编译器警告。
 
 **译注：有关「抽象泄漏」（Leaky Abstractions）的概念可参考 [奇舞精选 2021-07-06 的文章](https://mp.weixin.qq.com/s/KneomYX_7yQ78RzAmvIoHg)**
 
-回想一下 [Item-28](/Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays.md)，非具体化类型是指其运行时表示的信息少于其编译时表示的信息，并且几乎所有泛型和参数化类型都是不可具体化的。如果方法声明其可变参数为不可具体化类型，编译器将在声明上生成警告。如果方法是在其推断类型不可具体化的可变参数上调用的，编译器也会在调用时生成警告。生成的警告就像这样：
+回想一下 [Item-28](../Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays)，非具体化类型是指其运行时表示的信息少于其编译时表示的信息，并且几乎所有泛型和参数化类型都是不可具体化的。如果方法声明其可变参数为不可具体化类型，编译器将在声明上生成警告。如果方法是在其推断类型不可具体化的可变参数上调用的，编译器也会在调用时生成警告。生成的警告就像这样：
 
 ```
 warning: [unchecked] Possible heap pollution from parameterized vararg type List<String>
@@ -12,7 +12,7 @@ warning: [unchecked] Possible heap pollution from parameterized vararg type List
 
 当参数化类型的变量引用不属于该类型的对象时，就会发生堆污染[JLS, 4.12.2]。它会导致编译器自动生成的强制类型转换失败，违反泛型类型系统的基本保证。
 
-例如，考虑这个方法，它摘自 127 页（[Item-26](/Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types.md)）的代码片段，但做了些修改：
+例如，考虑这个方法，它摘自 127 页（[Item-26](../Chapter-5/Chapter-5-Item-26-Do-not-use-raw-types)）的代码片段，但做了些修改：
 
 ```
 // Mixing generics and varargs can violate type safety!
@@ -29,7 +29,7 @@ static void dangerous(List<String>... stringLists) {
 
 这个例子提出了一个有趣的问题：为什么使用泛型可变参数声明方法是合法的，而显式创建泛型数组是非法的？换句话说，为什么前面显示的方法只生成警告，而 127 页上的代码片段发生错误？答案是，带有泛型或参数化类型的可变参数的方法在实际开发中非常有用，因此语言设计人员选择忍受这种不一致性。事实上，Java 库导出了几个这样的方法，包括 `Arrays.asList(T... a)`、`Collections.addAll(Collection<? super T> c, T... elements)` 以及 `EnumSet.of(E first, E... rest)`。它们与前面显示的危险方法不同，这些库方法是类型安全的。
 
-在 Java 7 之前，使用泛型可变参数的方法的作者对调用点上产生的警告无能为力。使得这些 API 难以使用。用户必须忍受这些警告，或者在每个调用点（[Item-27](/Chapter-5/Chapter-5-Item-27-Eliminate-unchecked-warnings.md)）使用 @SuppressWarnings("unchecked") 注释消除这些警告。这种做法乏善可陈，既损害了可读性，也忽略了标记实际问题的警告。
+在 Java 7 之前，使用泛型可变参数的方法的作者对调用点上产生的警告无能为力。使得这些 API 难以使用。用户必须忍受这些警告，或者在每个调用点（[Item-27](../Chapter-5/Chapter-5-Item-27-Eliminate-unchecked-warnings)）使用 @SuppressWarnings("unchecked") 注释消除这些警告。这种做法乏善可陈，既损害了可读性，也忽略了标记实际问题的警告。
 
 在 Java 7 中添加了 SafeVarargs 注释，以允许使用泛型可变参数的方法的作者自动抑制客户端警告。本质上，**SafeVarargs 注释构成了方法作者的一个承诺，即该方法是类型安全的。** 作为这个承诺的交换条件，编译器同意不对调用可能不安全的方法的用户发出警告。
 
@@ -95,7 +95,7 @@ static <T> List<T> flatten(List<? extends T>... lists) {
 
 请注意，SafeVarargs 注释仅对不能覆盖的方法合法，因为不可能保证所有可能覆盖的方法都是安全的。在 Java 8 中，注释仅对静态方法和最终实例方法合法；在 Java 9 中，它在私有实例方法上也成为合法的。
 
-使用 SafeVarargs 注释的另一种选择是接受 [Item-28](/Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays.md) 的建议，并用 List 参数替换可变参数（它是一个伪装的数组）。下面是将这种方法应用到我们的 flatten 方法时的效果。注意，只有参数声明发生了更改：
+使用 SafeVarargs 注释的另一种选择是接受 [Item-28](../Chapter-5/Chapter-5-Item-28-Prefer-lists-to-arrays) 的建议，并用 List 参数替换可变参数（它是一个伪装的数组）。下面是将这种方法应用到我们的 flatten 方法时的效果。注意，只有参数声明发生了更改：
 
 ```
 // List as a typesafe alternative to a generic varargs parameter

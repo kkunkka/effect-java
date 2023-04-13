@@ -1,10 +1,10 @@
 # 第七十四节: 为每个方法记录会抛出的所有异常
 
-描述方法抛出的异常，是该方法文档的重要部分。因此，花时间仔细记录每个方法抛出的所有异常是非常重要的（[Item-56](/Chapter-8/Chapter-8-Item-56-Write-doc-comments-for-all-exposed-API-elements.md)）。
+描述方法抛出的异常，是该方法文档的重要部分。因此，花时间仔细记录每个方法抛出的所有异常是非常重要的（[Item-56](../Chapter-8/Chapter-8-Item-56-Write-doc-comments-for-all-exposed-API-elements)）。
 
 **始终单独声明 checked 异常，并使用 Javadoc 的 `@throw` 标记精确记录每次抛出异常的条件**。如果一个方法抛出多个异常，不要使用快捷方式声明这些异常的超类。作为一个极端的例子，即不要在公共方法声明 `throws Exception`，或者更糟，甚至 `throws Throwable`。除了不能向方法的用户提供会抛出哪些异常的任何消息之外，这样的声明还极大地阻碍了方法的使用，因为它掩盖了在相同上下文中可能抛出的任何其他异常。这个建议的一个特例是 main 方法，它可以安全地声明 `throw Exception`，因为它只被 VM 调用。
 
-虽然 Java 不要求程序员为方法声明会抛出的 unchecked 异常，但明智的做法是，应该像 checked 异常一样仔细地记录它们。unchecked 异常通常表示编程错误（[Item-70](/Chapter-10/Chapter-10-Item-70-Use-checked-exceptions-for-recoverable-conditions-and-runtime-exceptions-for-programming-errors.md)），让程序员熟悉他们可能犯的所有错误可以帮助他们避免犯这些错误。将方法可以抛出的 unchecked 异常形成良好文档，可以有效描述方法成功执行的先决条件。每个公共方法的文档都必须描述它的先决条件（[Item-56](/Chapter-8/Chapter-8-Item-56-Write-doc-comments-for-all-exposed-API-elements.md)），记录它的 unchecked 异常是满足这个需求的最佳方法。
+虽然 Java 不要求程序员为方法声明会抛出的 unchecked 异常，但明智的做法是，应该像 checked 异常一样仔细地记录它们。unchecked 异常通常表示编程错误（[Item-70](../Chapter-10/Chapter-10-Item-70-Use-checked-exceptions-for-recoverable-conditions-and-runtime-exceptions-for-programming-errors)），让程序员熟悉他们可能犯的所有错误可以帮助他们避免犯这些错误。将方法可以抛出的 unchecked 异常形成良好文档，可以有效描述方法成功执行的先决条件。每个公共方法的文档都必须描述它的先决条件（[Item-56](../Chapter-8/Chapter-8-Item-56-Write-doc-comments-for-all-exposed-API-elements)），记录它的 unchecked 异常是满足这个需求的最佳方法。
 
 特别重要的是，接口中的方法要记录它们可能抛出的 unchecked 异常。此文档构成接口通用约定的一部分，并指明接口的多个实现之间应该遵守的公共行为。
 

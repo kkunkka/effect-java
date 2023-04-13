@@ -1,10 +1,10 @@
 # 第九十节: 考虑以序列化代理代替序列化实例
 
-正如在 [Item-85](/Chapter-12/Chapter-12-Item-85-Prefer-alternatives-to-Java-serialization.md) 和 [Item-86](/Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution.md) 中提到的贯穿本章的问题：实现 Serializable 接口的决定增加了出现 bug 和安全问题的可能性，因为它允许使用一种超语言机制来创建实例，而不是使用普通的构造函数。然而，有一种技术可以大大降低这些风险。这种技术称为序列化代理模式。
+正如在 [Item-85](../Chapter-12/Chapter-12-Item-85-Prefer-alternatives-to-Java-serialization) 和 [Item-86](../Chapter-12/Chapter-12-Item-86-Implement-Serializable-with-great-caution) 中提到的贯穿本章的问题：实现 Serializable 接口的决定增加了出现 bug 和安全问题的可能性，因为它允许使用一种超语言机制来创建实例，而不是使用普通的构造函数。然而，有一种技术可以大大降低这些风险。这种技术称为序列化代理模式。
 
 序列化代理模式相当简单。首先，设计一个私有静态嵌套类，它简洁地表示外围类实例的逻辑状态。这个嵌套类称为外围类的序列化代理。它应该有一个构造函数，其参数类型是外围类。这个构造函数只是从它的参数复制数据：它不需要做任何一致性检查或防御性复制。按照设计，序列化代理的默认序列化形式是外围类的完美序列化形式。外围类及其序列代理都必须声明实现 Serializable 接口。
 
-例如，考虑 [Item-50](/Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed.md) 中编写的不可变 Period 类，并在 [Item-88](/Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively.md) 中使其可序列化。这是该类的序列化代理。Period 非常简单，它的序列化代理具有与类完全相同的字段：
+例如，考虑 [Item-50](../Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed) 中编写的不可变 Period 类，并在 [Item-88](../Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively) 中使其可序列化。这是该类的序列化代理。Period 非常简单，它的序列化代理具有与类完全相同的字段：
 
 ```
 // Serialization proxy for Period class
@@ -52,11 +52,11 @@ private Object readResolve() {
 }
 ```
 
-与防御性复制方法（第 357 页）类似，序列化代理方法阻止伪字节流攻击（第 354 页）和内部字段盗窃攻击（第 356 页）。与前两种方法不同，这种方法允许 Period 的字段为 final，这是 Period 类真正不可变所必需的（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）。与前两种方法不同，这一种方法不需要太多的思考。你不必指出哪些字段可能会受到狡猾的序列化攻击的危害，也不必显式地执行有效性检查作为反序列化的一部分。
+与防御性复制方法（第 357 页）类似，序列化代理方法阻止伪字节流攻击（第 354 页）和内部字段盗窃攻击（第 356 页）。与前两种方法不同，这种方法允许 Period 的字段为 final，这是 Period 类真正不可变所必需的（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）。与前两种方法不同，这一种方法不需要太多的思考。你不必指出哪些字段可能会受到狡猾的序列化攻击的危害，也不必显式地执行有效性检查作为反序列化的一部分。
 
 序列化代理模式还有另一种方式比 readObject 中的防御性复制更强大。序列化代理模式允许反序列化实例具有与初始序列化实例不同的类。你可能不认为这在实践中有用，但它确实有用。
 
-考虑 EnumSet 的情况（[Item-36](/Chapter-6/Chapter-6-Item-36-Use-EnumSet-instead-of-bit-fields.md)）。该类没有公共构造函数，只有静态工厂。从客户端的角度来看，它们返回 EnumSet 实例，但是在当前 OpenJDK 实现中，它们返回两个子类中的一个，具体取决于底层枚举类型的大小。如果底层枚举类型有 64 个或更少的元素，则静态工厂返回一个 RegularEnumSet；否则，它们返回一个 JumboEnumSet。
+考虑 EnumSet 的情况（[Item-36](../Chapter-6/Chapter-6-Item-36-Use-EnumSet-instead-of-bit-fields)）。该类没有公共构造函数，只有静态工厂。从客户端的角度来看，它们返回 EnumSet 实例，但是在当前 OpenJDK 实现中，它们返回两个子类中的一个，具体取决于底层枚举类型的大小。如果底层枚举类型有 64 个或更少的元素，则静态工厂返回一个 RegularEnumSet；否则，它们返回一个 JumboEnumSet。
 
 现在考虑，如果序列化一个枚举集合，它的枚举类型有 60 个元素，然后给这个枚举类型再增加 5 个元素，之后反序列化这个枚举集合。当它被序列化的时候，返回 RegularEnumSet 实例，但最好是 JumboEnumSet 实例。事实上正是这样，因为 EnumSet 使用序列化代理模式。如果你好奇，这里是 EnumSet 的序列化代理。其实很简单：
 
@@ -85,7 +85,7 @@ private static class SerializationProxy <E extends Enum<E>> implements Serializa
 }
 ```
 
-序列化代理模式有两个限制。它与客户端可扩展的类不兼容（[Item-19](/Chapter-4/Chapter-4-Item-19-Design-and-document-for-inheritance-or-else-prohibit-it.md)）。而且，它也不能与对象图中包含循环的某些类兼容：如果你试图从对象的序列化代理的 readResolve 方法中调用对象上的方法，你将得到一个 ClassCastException，因为你还没有对象，只有对象的序列化代理。
+序列化代理模式有两个限制。它与客户端可扩展的类不兼容（[Item-19](../Chapter-4/Chapter-4-Item-19-Design-and-document-for-inheritance-or-else-prohibit-it)）。而且，它也不能与对象图中包含循环的某些类兼容：如果你试图从对象的序列化代理的 readResolve 方法中调用对象上的方法，你将得到一个 ClassCastException，因为你还没有对象，只有对象的序列化代理。
 
 最后，序列化代理模式所增强的功能和安全性并不是没有代价的。在我的机器上，通过序列化代理来序列化和反序列化 Period 实例的开销，比用保护性拷贝进行的开销增加了14%。
 

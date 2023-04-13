@@ -35,7 +35,7 @@ public class Bigram {
 
 主程序重复地向一个集合中添加 26 个 bigram，每个 bigram 由两个相同的小写字母组成。然后它打印该集合的大小。如果你尝试运行该程序，你会发现它打印的不是 26 而是 260。有什么问题吗？
 
-显然，Bigram 类的作者打算覆盖 equals 方法（[Item-10](/Chapter-3/Chapter-3-Item-10-Obey-the-general-contract-when-overriding-equals.md)），甚至还记得要一并覆盖 hashCode（[Item-11](/Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals.md)）。不幸的是，我们的程序员没有覆盖 equals，而是重载了它（[Item-52](/Chapter-8/Chapter-8-Item-52-Use-overloading-judiciously.md)）。要覆盖 `Object.equals`，你必须定义一个 equals 方法，它的参数是 Object 类型的，但是 Bigram 的 equals 方法的参数不是 Object 类型的，所以 Bigram 从 Object 继承 equals 方法。这个继承来的 equals 方法只能检测对象同一性，就像 == 操作符一样。每 10 个 bigram 副本为一组，每组中的每个 bigram 副本都不同于其他 9 个，因此 `Object.equals` 认为它们不相等，这就解释了为什么程序最终打印 260。
+显然，Bigram 类的作者打算覆盖 equals 方法（[Item-10](../Chapter-3/Chapter-3-Item-10-Obey-the-general-contract-when-overriding-equals)），甚至还记得要一并覆盖 hashCode（[Item-11](../Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals)）。不幸的是，我们的程序员没有覆盖 equals，而是重载了它（[Item-52](../Chapter-8/Chapter-8-Item-52-Use-overloading-judiciously)）。要覆盖 `Object.equals`，你必须定义一个 equals 方法，它的参数是 Object 类型的，但是 Bigram 的 equals 方法的参数不是 Object 类型的，所以 Bigram 从 Object 继承 equals 方法。这个继承来的 equals 方法只能检测对象同一性，就像 == 操作符一样。每 10 个 bigram 副本为一组，每组中的每个 bigram 副本都不同于其他 9 个，因此 `Object.equals` 认为它们不相等，这就解释了为什么程序最终打印 260。
 
 幸运的是，编译器可以帮助你找到这个错误，但前提是你告诉它你打算覆盖 `Object.equals`。为此，请使用 `@Override` 注解标记 `Bigram.equals`，如下所示：
 
@@ -54,7 +54,7 @@ Bigram.java:10: method does not override or implement a method from a supertype
 ^
 ```
 
-你会立刻意识到自己做错了什么，拍拍自己的额头，用正确的方式替换不正确的 equals 实现（[Item-10](/Chapter-3/Chapter-3-Item-10-Obey-the-general-contract-when-overriding-equals.md)）：
+你会立刻意识到自己做错了什么，拍拍自己的额头，用正确的方式替换不正确的 equals 实现（[Item-10](../Chapter-3/Chapter-3-Item-10-Obey-the-general-contract-when-overriding-equals)）：
 
 ```
 @Override

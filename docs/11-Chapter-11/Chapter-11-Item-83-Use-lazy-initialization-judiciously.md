@@ -6,9 +6,9 @@
 
 延迟初始化也有它的用途。如果一个字段只在类的一小部分实例上访问，并且初始化该字段的代价很高，那么延迟初始化可能是值得的。唯一确定的方法是以使用和不使用延迟初始化的效果对比来度量类的性能。
 
-在存在多个线程的情况下，使用延迟初始化很棘手。如果两个或多个线程共享一个延迟初始化的字段，那么必须使用某种形式的同步，否则会导致严重的错误（[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md)）。本条目讨论的所有初始化技术都是线程安全的。
+在存在多个线程的情况下，使用延迟初始化很棘手。如果两个或多个线程共享一个延迟初始化的字段，那么必须使用某种形式的同步，否则会导致严重的错误（[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data)）。本条目讨论的所有初始化技术都是线程安全的。
 
-**在大多数情况下，常规初始化优于延迟初始化。** 下面是一个使用常规初始化的实例字段的典型声明。注意 final 修饰符的使用（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）：
+**在大多数情况下，常规初始化优于延迟初始化。** 下面是一个使用常规初始化的实例字段的典型声明。注意 final 修饰符的使用（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）：
 
 ```
 // Normal initialization of an instance field
@@ -41,7 +41,7 @@ private static FieldType getField() { return FieldHolder.field; }
 
 第一次调用 getField 时，它执行 FieldHolder.field，导致初始化 FieldHolder 类。这个习惯用法的优点是 getField 方法不是同步的，只执行字段访问，所以延迟初始化实际上不会增加访问成本。典型的 VM 只会同步字段访问来初始化类。初始化类之后，VM 会对代码进行修补，这样对字段的后续访问就不会涉及任何测试或同步。
 
-**如果需要使用延迟初始化来提高实例字段的性能，请使用双重检查模式。** 这个模式避免了初始化后访问字段时的锁定成本（[Item-79](/Chapter-11/Chapter-11-Item-79-Avoid-excessive-synchronization.md)）。这个模式背后的思想是两次检查字段的值（因此得名 double check）：一次没有锁定，然后，如果字段没有初始化，第二次使用锁定。只有当第二次检查指示字段未初始化时，调用才初始化字段。由于初始化字段后没有锁定，因此将字段声明为 volatile 非常重要（[Item-78](/Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data.md)）。下面是这个模式的示例：
+**如果需要使用延迟初始化来提高实例字段的性能，请使用双重检查模式。** 这个模式避免了初始化后访问字段时的锁定成本（[Item-79](../Chapter-11/Chapter-11-Item-79-Avoid-excessive-synchronization)）。这个模式背后的思想是两次检查字段的值（因此得名 double check）：一次没有锁定，然后，如果字段没有初始化，第二次使用锁定。只有当第二次检查指示字段未初始化时，调用才初始化字段。由于初始化字段后没有锁定，因此将字段声明为 volatile 非常重要（[Item-78](../Chapter-11/Chapter-11-Item-78-Synchronize-access-to-shared-mutable-data)）。下面是这个模式的示例：
 
 ```
 // Double-check idiom for lazy initialization of instance fields

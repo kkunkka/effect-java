@@ -13,7 +13,7 @@ try {
 }
 ```
 
-下面是来自 AbstractSequentialList 类的异常转换示例，该类是 List 接口的一个框架实现（[Item-20](/Chapter-4/Chapter-4-Item-20-Prefer-interfaces-to-abstract-classes.md)）。在本例中，异常转换是由 `List<E>` 接口中的 get 方法规范强制执行的：
+下面是来自 AbstractSequentialList 类的异常转换示例，该类是 List 接口的一个框架实现（[Item-20](../Chapter-4/Chapter-4-Item-20-Prefer-interfaces-to-abstract-classes)）。在本例中，异常转换是由 `List<E>` 接口中的 get 方法规范强制执行的：
 
 ```
 /**
@@ -61,4 +61,4 @@ class HigherLevelException extends Exception {
 
 如果不可能从低层防止异常，那么下一个最好的方法就是让高层静默处理这些异常，使较高层方法的调用者免受低层问题的影响。在这种情况下，可以使用一些适当的日志工具（如 `java.util.logging`）来记录异常。这允许程序员研究问题，同时将客户端代码和用户与之隔离。
 
-总之，如果无法防止或处理来自低层的异常，则使用异常转换，但要保证低层方法的所有异常都适用于较高层。链式异常提供了兼顾两方面的最佳服务：允许抛出适当的高层异常，同时捕获并分析失败的潜在原因（[Item-75](/Chapter-10/Chapter-10-Item-75-Include-failure-capture-information-in-detail-messages.md)）。
+总之，如果无法防止或处理来自低层的异常，则使用异常转换，但要保证低层方法的所有异常都适用于较高层。链式异常提供了兼顾两方面的最佳服务：允许抛出适当的高层异常，同时捕获并分析失败的潜在原因（[Item-75](../Chapter-10/Chapter-10-Item-75-Include-failure-capture-information-in-detail-messages)）。

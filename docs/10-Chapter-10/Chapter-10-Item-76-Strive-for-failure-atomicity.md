@@ -2,9 +2,9 @@
 
 在对象抛出异常之后，通常希望对象仍然处于定义良好的可用状态，即使在执行操作时发生了故障。对于 checked 异常尤其如此，调用者希望从异常中恢复。**一般来说，失败的方法调用应该使对象处于调用之前的状态。** 具有此属性的方法称为具备故障原子性。
 
-有几种方式可以达到这种效果。最简单的方法是设计不可变对象（[Item-17](/Chapter-4/Chapter-4-Item-17-Minimize-mutability.md)）。如果对象是不可变的，则故障原子性是必然的。如果一个操作失败，它可能会阻止创建一个新对象，但是它不会让一个现有对象处于不一致的状态，因为每个对象的状态在创建时是一致的，并且在创建后不能修改。
+有几种方式可以达到这种效果。最简单的方法是设计不可变对象（[Item-17](../Chapter-4/Chapter-4-Item-17-Minimize-mutability)）。如果对象是不可变的，则故障原子性是必然的。如果一个操作失败，它可能会阻止创建一个新对象，但是它不会让一个现有对象处于不一致的状态，因为每个对象的状态在创建时是一致的，并且在创建后不能修改。
 
-对于操作可变对象的方法，实现故障原子性的最常见方法是在执行操作之前检查参数的有效性（[Item-49](/Chapter-8/Chapter-8-Item-49-Check-parameters-for-validity.md)）。这使得大多数异常在对象修改开始之前被抛出。例如，考虑 `Stack.pop` 方法（[Item-7](/Chapter-2/Chapter-2-Item-7-Eliminate-obsolete-object-references.md)）：
+对于操作可变对象的方法，实现故障原子性的最常见方法是在执行操作之前检查参数的有效性（[Item-49](../Chapter-8/Chapter-8-Item-49-Check-parameters-for-validity)）。这使得大多数异常在对象修改开始之前被抛出。例如，考虑 `Stack.pop` 方法（[Item-7](../Chapter-2/Chapter-2-Item-7-Eliminate-obsolete-object-references)）：
 
 ```
 public Object pop() {
@@ -16,7 +16,7 @@ public Object pop() {
 }
 ```
 
-如果取消了初始大小检查，当该方法试图从空堆栈中弹出元素时，仍然会抛出异常。但是，这会使 size 字段处于不一致的（负值）状态，导致以后该对象的任何方法调用都会失败。此外，pop 方法抛出的 ArrayIndexOutOfBoundsException 也不适于高层抽象解释（[Item-73](/Chapter-10/Chapter-10-Item-73-Throw-exceptions-appropriate-to-the-abstraction.md)）。
+如果取消了初始大小检查，当该方法试图从空堆栈中弹出元素时，仍然会抛出异常。但是，这会使 size 字段处于不一致的（负值）状态，导致以后该对象的任何方法调用都会失败。此外，pop 方法抛出的 ArrayIndexOutOfBoundsException 也不适于高层抽象解释（[Item-73](../Chapter-10/Chapter-10-Item-73-Throw-exceptions-appropriate-to-the-abstraction)）。
 
 实现故障原子性的另一种方式是对计算进行排序，以便可能发生故障的部分都先于修改对象的部分发生。当执行某部分计算才能检查参数时，这种方法是前一种方法的自然扩展。例如，考虑 TreeMap 的情况，它的元素按照一定的顺序排序。为了向 TreeMap 中添加元素，元素的类型必须能够使用 TreeMap 的顺序进行比较。在以任何方式修改「树」之前，由于在「树」中搜索元素，试图添加类型不正确的元素自然会失败，并导致 ClassCastException 异常。
 

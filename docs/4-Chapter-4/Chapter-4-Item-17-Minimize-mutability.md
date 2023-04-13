@@ -10,11 +10,11 @@
 
 3. **所有字段用 final 修饰。** 这清楚地表达了意图，并由系统强制执行。同样，如果在没有同步的情况下，引用新创建的实例并从一个线程传递到另一个线程，那么就有必要确保正确的行为，就像内存模型中描述的那样 [JLS, 17.5;Goetz06, 16]。
 
-4. **所有字段设为私有。** 这将阻止客户端访问字段引用的可变对象并直接修改这些对象。虽然在技术上允许不可变类拥有包含基本类型或对不可变对象的引用的公共 final 字段，但不建议这样做，因为在以后的版本中无法更改内部表示（[Item-15](/Chapter-4/Chapter-4-Item-15-Minimize-the-accessibility-of-classes-and-members.md) 和 [Item-16](/Chapter-4/Chapter-4-Item-16-In-public-classes-use-accessor-methods-not-public-fields.md)）。
+4. **所有字段设为私有。** 这将阻止客户端访问字段引用的可变对象并直接修改这些对象。虽然在技术上允许不可变类拥有包含基本类型或对不可变对象的引用的公共 final 字段，但不建议这样做，因为在以后的版本中无法更改内部表示（[Item-15](../Chapter-4/Chapter-4-Item-15-Minimize-the-accessibility-of-classes-and-members) 和 [Item-16](../Chapter-4/Chapter-4-Item-16-In-public-classes-use-accessor-methods-not-public-fields)）。
 
-5. **确保对任何可变组件的独占访问。** 如果你的类有任何引用可变对象的字段，请确保该类的客户端无法获得对这些对象的引用。永远不要向提供对象引用的客户端初始化这样的字段，也不要从访问器返回字段。在构造函数、访问器和 readObject 方法（[Item-88](/Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively.md)）中创建防御性副本（[Item-50](/Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed.md)）。
+5. **确保对任何可变组件的独占访问。** 如果你的类有任何引用可变对象的字段，请确保该类的客户端无法获得对这些对象的引用。永远不要向提供对象引用的客户端初始化这样的字段，也不要从访问器返回字段。在构造函数、访问器和 readObject 方法（[Item-88](../Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively)）中创建防御性副本（[Item-50](../Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed)）。
 
-前面条目中的许多示例类都是不可变的。其中一个类是 [Item-11](/Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals.md) 中的 PhoneNumber，它的每个属性都有访问器，但没有对应的修改器。下面是一个稍微复杂的例子：
+前面条目中的许多示例类都是不可变的。其中一个类是 [Item-11](../Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals) 中的 PhoneNumber，它的每个属性都有访问器，但没有对应的修改器。下面是一个稍微复杂的例子：
 
 ```
 // Immutable complex number class
@@ -75,16 +75,16 @@ public static final Complex ONE = new Complex(1, 0);
 public static final Complex I = new Complex(0, 1);
 ```
 
-这种方法可以更进一步。不可变类可以提供静态工厂（[Item-1](/Chapter-2/Chapter-2-Item-1-Consider-static-factory-methods-instead-of-constructors.md)），这些工厂缓存经常请求的实例，以避免在现有实例可用时创建新实例。所有包装类和 BigInteger 都是这样做的。使用这种静态工厂会导致客户端共享实例而不是创建新实例，从而减少内存占用和垃圾收集成本。在设计新类时，选择静态工厂而不是公共构造函数，这将使你能够灵活地在以后添加缓存，而无需修改客户端。
+这种方法可以更进一步。不可变类可以提供静态工厂（[Item-1](../Chapter-2/Chapter-2-Item-1-Consider-static-factory-methods-instead-of-constructors)），这些工厂缓存经常请求的实例，以避免在现有实例可用时创建新实例。所有包装类和 BigInteger 都是这样做的。使用这种静态工厂会导致客户端共享实例而不是创建新实例，从而减少内存占用和垃圾收集成本。在设计新类时，选择静态工厂而不是公共构造函数，这将使你能够灵活地在以后添加缓存，而无需修改客户端。
 
 
-不可变对象可以自由共享这一事实的结果之一是，你永远不需要对它们进行防御性的复制（[Item-50](/Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed.md)）。事实上，你根本不需要做任何拷贝，因为拷贝将永远等同于原件。因此，你不需要也不应该在不可变类上提供克隆方法或复制构造函数（[Item-13](/Chapter-3/Chapter-3-Item-13-Override-clone-judiciously.md)）。这在 Java 平台的早期并没有得到很好的理解，因此 String 类确实有一个复制构造函数，但是，即使有，也应该少用（[Item-6](/Chapter-2/Chapter-2-Item-6-Avoid-creating-unnecessary-objects.md)）。
+不可变对象可以自由共享这一事实的结果之一是，你永远不需要对它们进行防御性的复制（[Item-50](../Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed)）。事实上，你根本不需要做任何拷贝，因为拷贝将永远等同于原件。因此，你不需要也不应该在不可变类上提供克隆方法或复制构造函数（[Item-13](../Chapter-3/Chapter-3-Item-13-Override-clone-judiciously)）。这在 Java 平台的早期并没有得到很好的理解，因此 String 类确实有一个复制构造函数，但是，即使有，也应该少用（[Item-6](../Chapter-2/Chapter-2-Item-6-Avoid-creating-unnecessary-objects)）。
 
 **你不仅可以共享不可变对象，而且可以共享它们的内部实现。** 例如，BigInteger 类在内部使用符号大小来表示。符号由 int 表示，大小由 int 数组表示。negate 方法产生一个新的 BigInteger，大小相同，符号相反。即使数组是可变的，也不需要复制；新创建的 BigInteger 指向与原始数组相同的内部数组。
 
 **不可变对象可以很好的作为其他对象的构建模块，** 无论是可变的还是不可变的。如果知道复杂对象的组件对象不会在其内部发生更改，那么维护复杂对象的不变性就会容易得多。这个原则的一个具体的例子是，不可变对象很合适作为 Map 的键和 Set 的元素：你不必担心它们的值在 Map 或 Set 中发生变化，从而破坏 Map 或 Set 的不变性。
 
-**不可变对象自带提供故障原子性**（[Item-76](/Chapter-10/Chapter-10-Item-76-Strive-for-failure-atomicity.md)）。他们的状态从未改变，所以不可能出现暂时的不一致。
+**不可变对象自带提供故障原子性**（[Item-76](../Chapter-10/Chapter-10-Item-76-Strive-for-failure-atomicity)）。他们的状态从未改变，所以不可能出现暂时的不一致。
 
 **不可变类的主要缺点是每个不同的值都需要一个单独的对象。** 创建这些对象的成本可能很高，尤其是对象很大的时候。例如，假设你有一个百万位的 BigInteger，你想改变它的低阶位：
 
@@ -104,7 +104,7 @@ moby.flip(0);
 
 如果你能够准确地预测客户端希望在不可变类上执行哪些复杂操作，那么包私有可变伴随类方法就可以很好地工作。如果不是，那么你最好的选择就是提供一个公共可变伴随类。这种方法在 Java 库中的主要示例是 String 类，它的可变伴随类是 StringBuilder（及其过时的前身 StringBuffer)。
 
-既然你已经知道了如何创建不可变类，并且了解了不可变性的优缺点，那么让我们来讨论一些设计方案。回想一下，为了保证不变性，类不允许自己被子类化。可以用 final 修饰以达到目的，但是还有另外一个更灵活的选择，你可以将其所有构造函数变为私有或包私有，并使用公共静态工厂方法来代替公共的构造函数（[Item-1](/Chapter-2/Chapter-2-Item-1-Consider-static-factory-methods-instead-of-constructors.md)）。Complex 类采用这种方式修改后如下所示：
+既然你已经知道了如何创建不可变类，并且了解了不可变性的优缺点，那么让我们来讨论一些设计方案。回想一下，为了保证不变性，类不允许自己被子类化。可以用 final 修饰以达到目的，但是还有另外一个更灵活的选择，你可以将其所有构造函数变为私有或包私有，并使用公共静态工厂方法来代替公共的构造函数（[Item-1](../Chapter-2/Chapter-2-Item-1-Consider-static-factory-methods-instead-of-constructors)）。Complex 类采用这种方式修改后如下所示：
 
 ```
 // Immutable class with static factories instead of constructors
@@ -124,7 +124,7 @@ public class Complex {
 
 这种方式通常是最好的选择。它是最灵活的，因为它允许使用多个包私有实现类。对于驻留在包之外的客户端而言，不可变类实际上是 final 类，因为不可能继承自另一个包的类，因为它缺少公共或受保护的构造函数。除了允许多实现类的灵活性之外，这种方法还通过改进静态工厂的对象缓存功能，使得后续版本中调优该类的性能成为可能。
 
-当编写 BigInteger 和 BigDecimal 时，不可变类必须是有效的 final 这一点没有被广泛理解，因此它们的所有方法都可能被重写。遗憾的是，在保留向后兼容性的情况下，这个问题无法得到纠正。如果你编写的类的安全性依赖于来自不受信任客户端的 BigInteger 或 BigDecimal 参数的不可变性，那么你必须检查该参数是否是「真正的」BigInteger 或 BigDecimal，而不是不受信任的子类实例。如果是后者，你必须防御性的复制它，假设它可能是可变的（[Item-50](/Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed.md)）:
+当编写 BigInteger 和 BigDecimal 时，不可变类必须是有效的 final 这一点没有被广泛理解，因此它们的所有方法都可能被重写。遗憾的是，在保留向后兼容性的情况下，这个问题无法得到纠正。如果你编写的类的安全性依赖于来自不受信任客户端的 BigInteger 或 BigDecimal 参数的不可变性，那么你必须检查该参数是否是「真正的」BigInteger 或 BigDecimal，而不是不受信任的子类实例。如果是后者，你必须防御性的复制它，假设它可能是可变的（[Item-50](../Chapter-8/Chapter-8-Item-50-Make-defensive-copies-when-needed)）:
 
 ```
 public static BigInteger safeInstance(BigInteger val) {
@@ -135,11 +135,11 @@ val : new BigInteger(val.toByteArray());
 
 这个条目开头的不可变类的规则列表指出，没有方法可以修改对象，它的所有字段必须是 final 的。实际上，这些规则过于严格，可以适当放松来提高性能。实际上，任何方法都不能在对象的状态中产生外部可见的更改。然而，一些不可变类有一个或多个非 final 字段，它们在第一次需要这些字段时，就会在其中缓存昂贵计算的结果。如果再次请求相同的值，则返回缓存的值，从而节省了重新计算的成本。这个技巧之所以有效，是因为对象是不可变的，这就保证了重复计算会产生相同的结果。
 
-例如，PhoneNumber 的 hashCode 方法([Item-11](/Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals.md)，第 53 页）在第一次调用时计算哈希代码，并缓存它，以备再次调用。这个技术是一个延迟初始化的例子（[Item-83](/Chapter-11/Chapter-11-Item-83-Use-lazy-initialization-judiciously.md)），String 也使用这个技术。
+例如，PhoneNumber 的 hashCode 方法([Item-11](../Chapter-3/Chapter-3-Item-11-Always-override-hashCode-when-you-override-equals)，第 53 页）在第一次调用时计算哈希代码，并缓存它，以备再次调用。这个技术是一个延迟初始化的例子（[Item-83](../Chapter-11/Chapter-11-Item-83-Use-lazy-initialization-judiciously)），String 也使用这个技术。
 
-关于可序列化性，应该提出一个警告。如果你选择让不可变类实现 Serializable，并且该类包含一个或多个引用可变对象的字段，那么你必须提供一个显式的 readObject 或 readResolve 方法，或者使用 ObjectOutputStream.writeUnshared 或 ObjectInputStream.readUnshared 方法，即使默认的序列化形式是可以接受的。否则攻击者可能创建类的可变实例。[Item-88](/Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively.md)详细讨论了这个主题。
+关于可序列化性，应该提出一个警告。如果你选择让不可变类实现 Serializable，并且该类包含一个或多个引用可变对象的字段，那么你必须提供一个显式的 readObject 或 readResolve 方法，或者使用 ObjectOutputStream.writeUnshared 或 ObjectInputStream.readUnshared 方法，即使默认的序列化形式是可以接受的。否则攻击者可能创建类的可变实例。[Item-88](../Chapter-12/Chapter-12-Item-88-Write-readObject-methods-defensively)详细讨论了这个主题。
 
-总而言之，不要急于为每个 getter 都编写 setter。**类应该是不可变的，除非有很好的理由让它们可变。** 不可变类提供了许多优点，它们唯一的缺点是在某些情况下可能出现性能问题。你应该始终使小的值对象（如 PhoneNumber 和 Complex）成为不可变的。（Java 库中有几个类，比如 `java.util.Date` 和 `java.awt.Point`，应该是不可改变的，但事实并非如此。）也应该认真考虑将较大的值对象（如 String 和 BigInteger）设置为不可变的。只有确认了实现令人满意的性能是必要的，才应该为不可变类提供一个公共可变伴随类（[Item-67](/Chapter-9/Chapter-9-Item-67-Optimize-judiciously.md)）。
+总而言之，不要急于为每个 getter 都编写 setter。**类应该是不可变的，除非有很好的理由让它们可变。** 不可变类提供了许多优点，它们唯一的缺点是在某些情况下可能出现性能问题。你应该始终使小的值对象（如 PhoneNumber 和 Complex）成为不可变的。（Java 库中有几个类，比如 `java.util.Date` 和 `java.awt.Point`，应该是不可改变的，但事实并非如此。）也应该认真考虑将较大的值对象（如 String 和 BigInteger）设置为不可变的。只有确认了实现令人满意的性能是必要的，才应该为不可变类提供一个公共可变伴随类（[Item-67](../Chapter-9/Chapter-9-Item-67-Optimize-judiciously)）。
 
 对于某些类来说，不变性是不切实际的。**如果一个类不能成为不可变的，那么就尽可能地限制它的可变性。** 减少对象可能存在的状态数可以更容易地 reason about the object 并减少出错的可能性。因此，除非有令人信服的理由，否则每个字段都应该用 final 修饰。将本条目的建议与 Item-15 的建议结合起来，你自然会倾向于 **声明每个字段为私有 final，除非有很好的理由不这样做。**
 
